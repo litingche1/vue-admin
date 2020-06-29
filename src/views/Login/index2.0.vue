@@ -27,7 +27,7 @@
         </el-form-item>
         <el-form-item label="密码" prop="pass" class="item-form">
           <el-input
-            type="password"
+            type="text"
             v-model="ruleForm.pass"
             autocomplete="off"
             minlength="6"
@@ -41,7 +41,7 @@
           class="item-form"
         >
           <el-input
-            type="password"
+            type="text"
             v-model="ruleForm.password"
             autocomplete="off"
             minlength="6"
@@ -61,7 +61,7 @@
               ></el-input>
             </el-col>
             <el-col :span="9">
-              <el-button type="success" class="btn-submit" @click="getSms"
+              <el-button type="success" class="btn-submit"
                 >获取验证码</el-button
               >
             </el-col>
@@ -87,16 +87,13 @@ import {
   validatePassword,
   validateCodes
 } from '@/utils/validate'
-import { ref, reactive, onMounted } from '@vue/composition-api'
-import { GetSms } from '@/api/login'
 export default {
   name: 'loin',
-  setup(props, context) {
-    //context就是之前的this例如挺好$refs,vue3.0中可以使用context.refs来表达
+  data() {
     //验证验证码
-    let checkcode = (rule, value, callback) => {
-      ruleForm.code = stripscript(value)
-      value = ruleForm.code
+    var checkcode = (rule, value, callback) => {
+      this.ruleForm.code = stripscript(value)
+      value = this.ruleForm.code
       if (value === '') {
         callback(new Error('请输入验证码'))
       } else if (validateCodes(value)) {
@@ -106,7 +103,7 @@ export default {
       }
     }
     //验证用户名
-    let validateUsername = (rule, value, callback) => {
+    var validateUsername = (rule, value, callback) => {
       if (value === '') {
         callback(new Error('请输入用户名'))
       } else if (validateEmail(value)) {
@@ -116,9 +113,9 @@ export default {
       }
     }
     //验证密码
-    let validatePass = (rule, value, callback) => {
-      ruleForm.pass = stripscript(value)
-      value = ruleForm.pass
+    var validatePass = (rule, value, callback) => {
+      this.ruleForm.pass = stripscript(value)
+      value = this.ruleForm.pass
       if (value === '') {
         callback(new Error('请输入密码'))
       } else if (validatePassword(value)) {
@@ -128,24 +125,40 @@ export default {
       }
     }
     //验证重复密码
-    let validatePass2 = (rule, value, callback) => {
-      ruleForm.passWord = stripscript(value)
-      value = ruleForm.passWord
+    var validatePass2 = (rule, value, callback) => {
+      this.ruleForm.passWord = stripscript(value)
+      value = this.ruleForm.passWord
       if (value === '') {
         callback(new Error('请输入重复密码'))
-      } else if (value !== ruleForm.pass) {
+      } else if (value !== this.ruleForm.pass) {
         callback(new Error('二次密码不一致'))
       } else {
         callback()
       }
     }
-    //注册和登录模块的切换
-    const menuchange = idx => {
-      menuIdx.value = idx
+    return {
+      loginList: ['登录', '注册'],
+      menuIdx: 0, //tab选中的顺序
+      ruleForm: {
+        pass: '',
+        username: '',
+        code: '',
+        password: ''
+      },
+      rules: {
+        pass: [{ validator: validatePass, trigger: 'blur' }],
+        username: [{ validator: validateUsername, trigger: 'blur' }],
+        code: [{ validator: checkcode, trigger: 'blur' }],
+        password: [{ validator: validatePass2, trigger: 'blur' }]
+      }
     }
-    //整个表单的校验函数
-    const submitForm = formName => {
-      context.refs[formName].validate(valid => {
+  },
+  methods: {
+    menuchange(idx) {
+      this.menuIdx = idx
+    },
+    submitForm(formName) {
+      this.$refs[formName].validate(valid => {
         if (valid) {
           alert('submit!')
         } else {
@@ -153,39 +166,9 @@ export default {
           return false
         }
       })
-    }
-const getSms = ()=>{
-  GetSms()
-}
-    //声明对象类型的数据使用reactive
-    const loginList = reactive(['登录', '注册'])
-    //声明基础数据类型变量时使用
-    const menuIdx = ref(0)
-    const ruleForm = reactive({
-      pass: '',
-      username: '',
-      code: '',
-      password: ''
-    })
-
-    const rules = reactive({
-      pass: [{ validator: validatePass, trigger: 'blur' }],
-      username: [{ validator: validateUsername, trigger: 'blur' }],
-      code: [{ validator: checkcode, trigger: 'blur' }],
-      password: [{ validator: validatePass2, trigger: 'blur' }]
-    })
-    //声明生命周期
-    onMounted(() => {
-      // GetSms()
-    })
-    return {
-      loginList,
-      menuIdx,
-      ruleForm,
-      rules,
-      menuchange,
-      submitForm,
-      getSms
+    },
+    resetForm(formName) {
+      this.$refs[formName].resetFields()
     }
   }
 }
