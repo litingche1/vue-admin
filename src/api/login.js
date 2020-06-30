@@ -1,15 +1,12 @@
-import service from '@/utils/request'
+import request from '@/utils/request'
 /**
  * 获取验证码
  */
-export function GetSms() {
-    service.request({
+export function GetSms (data) {
+    return request({
         method: 'post',
         url: '/getSms/',
-        data: {
-            username: '1111111@qq.com',
-            module: 'login'
-        }
+        data,//data:data可以写成data,es6的语法
     })
 }
 
@@ -32,3 +29,10 @@ export function GetSms() {
 /**
  * 注册
  */
+export function Register (data) {
+    return request({
+        method: 'post',
+        url: '/register/',
+        data,//data:data可以写成data,es6的语法
+    })
+}

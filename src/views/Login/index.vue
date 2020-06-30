@@ -61,8 +61,12 @@
               ></el-input>
             </el-col>
             <el-col :span="9">
-              <el-button type="success" class="btn-submit" @click="getSms"
-                >获取验证码</el-button
+              <el-button
+                type="success"
+                class="btn-submit"
+                @click="getSms"
+                :disabled="codeBtnStatus.status"
+                >{{ codeBtnStatus.text }}</el-button
               >
             </el-col>
           </el-row>
@@ -71,8 +75,9 @@
           <el-button
             type="danger"
             @click="submitForm('ruleForm')"
+            :disabled="loginBtn"
             class="margin-top-19 btn-submit"
-            >提交</el-button
+            >{{ menuIdx === 0 ? '登录' : '注册' }}</el-button
           >
         </el-form-item>
       </el-form>
@@ -91,8 +96,20 @@ import { ref, reactive, onMounted } from '@vue/composition-api'
 import { GetSms } from '@/api/login'
 export default {
   name: 'loin',
-  setup(props, context) {
-    //context就是之前的this例如挺好$refs,vue3.0中可以使用context.refs来表达
+  setup(props, { refs, root }) {
+    /**
+     * context是setup函数的第二个参数，{ refs, root }是解构赋值的写法获取context里面对应的值
+     * context里面包含以下内容(==后面的内容是vuw2.x的对应写法)
+          root: (...)  == this
+          parent: (...) == this.$parent
+          refs: (...)  == this.$refs
+          attrs: (...) == this.$attrs
+          listeners: (...) == this.$listeners
+          isServer: (...) == this.$isServer
+          ssrContext: (...)
+          emit: (...) == this.$emit
+          slots: {}
+     */
     //验证验证码
     let checkcode = (rule, value, callback) => {
       ruleForm.code = stripscript(value)
@@ -142,10 +159,11 @@ export default {
     //注册和登录模块的切换
     const menuchange = idx => {
       menuIdx.value = idx
+      refs.ruleForm.resetFields()
     }
     //整个表单的校验函数
     const submitForm = formName => {
-      context.refs[formName].validate(valid => {
+      refs[formName].validate(valid => {
         if (valid) {
           alert('submit!')
         } else {
@@ -154,13 +172,66 @@ export default {
         }
       })
     }
-const getSms = ()=>{
-  GetSms()
-}
+    //获取验证码
+    const getSms = () => {
+      //判断邮箱不能为空
+      if (ruleForm.username === '') {
+        root.$message.error('邮箱不能为空')
+        return false
+      }
+      //判断邮箱格式
+      if (validateEmail(ruleForm.username)) {
+        root.$message.error('邮箱格式有误')
+        return false
+      }
+      codeBtnStatus.status = true
+      codeBtnStatus.text = '发送中'
+      let params = {
+        username: ruleForm.username,
+        module: menuIdx.value === 0 ? 'login' : 'register'
+      }
+      //请求获取验证码的接口
+      GetSms(params)
+        .then(res => {
+          let data = res.data
+          root.$message.success(data.message)
+          //启用登录/注册按钮
+          loginBtn.value = false
+          countDown(60)
+          console.log(data)
+        })
+        .catch(err => {
+          console.log(err)
+        })
+    }
+    //倒计时
+    const countDown = num => {
+      let times = num
+      console.log(times)
+      timer.value = setInterval(() => {
+        times--
+        if (times === 0) {
+          clearInterval(timer.value)
+          codeBtnStatus.status = false
+          codeBtnStatus.text = '再次获取'
+        } else {
+          codeBtnStatus.text = `倒计时${times}秒`
+        }
+      }, 1000)
+    }
     //声明对象类型的数据使用reactive
     const loginList = reactive(['登录', '注册'])
     //声明基础数据类型变量时使用
     const menuIdx = ref(0)
+    const loginBtn = ref(true)
+    // const codeBtnStatus = ref(false)
+    // const codeText = ref('获取验证码')
+    //倒计时
+    const timer = ref(null)
+    const codeBtnStatus = reactive({
+      status: false,
+      text: '获取验证码'
+    })
     const ruleForm = reactive({
       pass: '',
       username: '',
@@ -181,6 +252,8 @@ const getSms = ()=>{
     return {
       loginList,
       menuIdx,
+      loginBtn,
+      codeBtnStatus,
       ruleForm,
       rules,
       menuchange,
