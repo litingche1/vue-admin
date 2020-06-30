@@ -7,23 +7,11 @@
           :key="idx"
           @click="menuchange(idx)"
           :class="{ current: idx === menuIdx }"
-        >
-          {{ item }}
-        </li>
+        >{{ item }}</li>
       </ul>
-      <el-form
-        :model="ruleForm"
-        status-icon
-        :rules="rules"
-        ref="ruleForm"
-        class="login-ruleForm"
-      >
+      <el-form :model="ruleForm" status-icon :rules="rules" ref="ruleForm" class="login-ruleForm">
         <el-form-item label="邮箱" prop="username" class="item-form">
-          <el-input
-            type="text"
-            v-model="ruleForm.username"
-            autocomplete="off"
-          ></el-input>
+          <el-input type="text" v-model="ruleForm.username" autocomplete="off"></el-input>
         </el-form-item>
         <el-form-item label="密码" prop="pass" class="item-form">
           <el-input
@@ -34,12 +22,7 @@
             maxlength="20"
           ></el-input>
         </el-form-item>
-        <el-form-item
-          v-if="menuIdx === 1"
-          label="重复密码"
-          prop="password"
-          class="item-form"
-        >
+        <el-form-item v-if="menuIdx === 1" label="重复密码" prop="password" class="item-form">
           <el-input
             type="password"
             v-model="ruleForm.password"
@@ -66,8 +49,7 @@
                 class="btn-submit"
                 @click="getSms"
                 :disabled="codeBtnStatus.status"
-                >{{ codeBtnStatus.text }}</el-button
-              >
+              >{{ codeBtnStatus.text }}</el-button>
             </el-col>
           </el-row>
         </el-form-item>
@@ -77,8 +59,7 @@
             @click="submitForm('ruleForm')"
             :disabled="loginBtn"
             class="margin-top-19 btn-submit"
-            >{{ menuIdx === 0 ? '登录' : '注册' }}</el-button
-          >
+          >{{ menuIdx === 0 ? '登录' : '注册' }}</el-button>
         </el-form-item>
       </el-form>
     </div>
@@ -91,11 +72,11 @@ import {
   validateEmail,
   validatePassword,
   validateCodes
-} from '@/utils/validate'
-import { ref, reactive, onMounted } from '@vue/composition-api'
-import { GetSms } from '@/api/login'
+} from "@/utils/validate";
+import { ref, reactive, onMounted } from "@vue/composition-api";
+import { GetSms, Register } from "@/api/login";
 export default {
-  name: 'loin',
+  name: "loin",
   setup(props, { refs, root }) {
     /**
      * context是setup函数的第二个参数，{ refs, root }是解构赋值的写法获取context里面对应的值
@@ -112,143 +93,155 @@ export default {
      */
     //验证验证码
     let checkcode = (rule, value, callback) => {
-      ruleForm.code = stripscript(value)
-      value = ruleForm.code
-      if (value === '') {
-        callback(new Error('请输入验证码'))
+      ruleForm.code = stripscript(value);
+      value = ruleForm.code;
+      if (value === "") {
+        callback(new Error("请输入验证码"));
       } else if (validateCodes(value)) {
-        callback(new Error('验证码格式有误'))
+        callback(new Error("验证码格式有误"));
       } else {
-        callback()
+        callback();
       }
-    }
+    };
     //验证用户名
     let validateUsername = (rule, value, callback) => {
-      if (value === '') {
-        callback(new Error('请输入用户名'))
+      if (value === "") {
+        callback(new Error("请输入用户名"));
       } else if (validateEmail(value)) {
-        callback(new Error('用户名格式有误'))
+        callback(new Error("用户名格式有误"));
       } else {
-        callback()
+        callback();
       }
-    }
+    };
     //验证密码
     let validatePass = (rule, value, callback) => {
-      ruleForm.pass = stripscript(value)
-      value = ruleForm.pass
-      if (value === '') {
-        callback(new Error('请输入密码'))
+      ruleForm.pass = stripscript(value);
+      value = ruleForm.pass;
+      if (value === "") {
+        callback(new Error("请输入密码"));
       } else if (validatePassword(value)) {
-        callback(new Error('密码为6至20位数字+字母'))
+        callback(new Error("密码为6至20位数字+字母"));
       } else {
-        callback()
+        callback();
       }
-    }
+    };
     //验证重复密码
     let validatePass2 = (rule, value, callback) => {
-      ruleForm.passWord = stripscript(value)
-      value = ruleForm.passWord
-      if (value === '') {
-        callback(new Error('请输入重复密码'))
+      ruleForm.passWord = stripscript(value);
+      value = ruleForm.passWord;
+      if (value === "") {
+        callback(new Error("请输入重复密码"));
       } else if (value !== ruleForm.pass) {
-        callback(new Error('二次密码不一致'))
+        callback(new Error("二次密码不一致"));
       } else {
-        callback()
+        callback();
       }
-    }
+    };
     //注册和登录模块的切换
     const menuchange = idx => {
-      menuIdx.value = idx
-      refs.ruleForm.resetFields()
-    }
+      menuIdx.value = idx;
+      refs.ruleForm.resetFields();
+    };
     //整个表单的校验函数
     const submitForm = formName => {
       refs[formName].validate(valid => {
         if (valid) {
-          alert('submit!')
+          let params = {
+            username: ruleForm.username,
+            password: ruleForm.pass,
+            code: ruleForm.code
+          };
+          Register(params)
+            .then(res => {
+              let data = res.data;
+              root.$message.success(data.message);
+            })
+            .catch(err => {
+              console.log(err);
+            });
         } else {
-          console.log('error submit!!')
-          return false
+          root.$message.error("表单填写不完整");
+          return false;
         }
-      })
-    }
+      });
+    };
     //获取验证码
     const getSms = () => {
       //判断邮箱不能为空
-      if (ruleForm.username === '') {
-        root.$message.error('邮箱不能为空')
-        return false
+      if (ruleForm.username === "") {
+        root.$message.error("邮箱不能为空");
+        return false;
       }
       //判断邮箱格式
       if (validateEmail(ruleForm.username)) {
-        root.$message.error('邮箱格式有误')
-        return false
+        root.$message.error("邮箱格式有误");
+        return false;
       }
-      codeBtnStatus.status = true
-      codeBtnStatus.text = '发送中'
+      codeBtnStatus.status = true;
+      codeBtnStatus.text = "发送中";
       let params = {
         username: ruleForm.username,
-        module: menuIdx.value === 0 ? 'login' : 'register'
-      }
+        module: menuIdx.value === 0 ? "login" : "register"
+      };
       //请求获取验证码的接口
       GetSms(params)
         .then(res => {
-          let data = res.data
-          root.$message.success(data.message)
+          let data = res.data;
+          root.$message.success(data.message);
           //启用登录/注册按钮
-          loginBtn.value = false
-          countDown(60)
-          console.log(data)
+          loginBtn.value = false;
+          countDown(60);
+          console.log(data);
         })
         .catch(err => {
-          console.log(err)
-        })
-    }
+          console.log(err);
+        });
+    };
     //倒计时
     const countDown = num => {
-      let times = num
-      console.log(times)
+      let times = num;
+      console.log(times);
       timer.value = setInterval(() => {
-        times--
+        times--;
         if (times === 0) {
-          clearInterval(timer.value)
-          codeBtnStatus.status = false
-          codeBtnStatus.text = '再次获取'
+          clearInterval(timer.value);
+          codeBtnStatus.status = false;
+          codeBtnStatus.text = "再次获取";
         } else {
-          codeBtnStatus.text = `倒计时${times}秒`
+          codeBtnStatus.text = `倒计时${times}秒`;
         }
-      }, 1000)
-    }
+      }, 1000);
+    };
     //声明对象类型的数据使用reactive
-    const loginList = reactive(['登录', '注册'])
+    const loginList = reactive(["登录", "注册"]);
     //声明基础数据类型变量时使用
-    const menuIdx = ref(0)
-    const loginBtn = ref(true)
+    const menuIdx = ref(0);
+    const loginBtn = ref(true);
     // const codeBtnStatus = ref(false)
     // const codeText = ref('获取验证码')
     //倒计时
-    const timer = ref(null)
+    const timer = ref(null);
     const codeBtnStatus = reactive({
       status: false,
-      text: '获取验证码'
-    })
+      text: "获取验证码"
+    });
     const ruleForm = reactive({
-      pass: '',
-      username: '',
-      code: '',
-      password: ''
-    })
+      pass: "",
+      username: "",
+      code: "",
+      password: ""
+    });
 
     const rules = reactive({
-      pass: [{ validator: validatePass, trigger: 'blur' }],
-      username: [{ validator: validateUsername, trigger: 'blur' }],
-      code: [{ validator: checkcode, trigger: 'blur' }],
-      password: [{ validator: validatePass2, trigger: 'blur' }]
-    })
+      pass: [{ validator: validatePass, trigger: "blur" }],
+      username: [{ validator: validateUsername, trigger: "blur" }],
+      code: [{ validator: checkcode, trigger: "blur" }],
+      password: [{ validator: validatePass2, trigger: "blur" }]
+    });
     //声明生命周期
     onMounted(() => {
       // GetSms()
-    })
+    });
     return {
       loginList,
       menuIdx,
@@ -259,9 +252,9 @@ export default {
       menuchange,
       submitForm,
       getSms
-    }
+    };
   }
-}
+};
 </script>
 
 <style lang="scss">

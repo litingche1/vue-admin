@@ -60,26 +60,14 @@ module.exports = {
     hotOnly: false,
     proxy: {
       '/api': {
+        /* 目标代理服务器地址 */
         target: `http://www.web-jshtml.cn/vue_admin_api`,
+        /* 允许跨域 */
         changeOrigin: true,
         pathRewrite: {
           '^/api': '',
         },
-        // /* 目标代理服务器地址 */
-        // target: 'http://www.web-jshtml.cn/vue_admin_api',
-        // /* 允许跨域 */
-        // changeOrigin: true,
-        // pathReWrite: {
-        //   '^/api': ''
-        // }
       },
-      // '/api': {
-      //   target: 'http://www.web-jshtml.cn/vue_admin_api',
-      //   changgeOrigin: true,
-      //   pathReWrite: {
-      //     '^/api': ''
-      //   }
-      // }
     }, // 设置代理
     overlay: { // 全屏模式下是否显示脚本错误
       warnings: true,
