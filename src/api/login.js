@@ -22,7 +22,13 @@ export function GetSms (data) {
 /**
  * 登录
  */
-
+export function Login (data) {
+    return request({
+        method: 'post',
+        url: '/login/',
+        data,//data:data可以写成data,es6的语法
+    })
+}
 
 
 

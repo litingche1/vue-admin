@@ -72,12 +72,12 @@ import {
   validateEmail,
   validatePassword,
   validateCodes
-} from "@/utils/validate";
-import { ref, reactive, onMounted } from "@vue/composition-api";
-import { GetSms, Register } from "@/api/login";
+} from '@/utils/validate'
+import { ref, reactive, onMounted } from '@vue/composition-api'
+import { GetSms, Register, Login } from '@/api/login'
 export default {
-  name: "loin",
-  setup(props, { refs, root }) {
+  name: 'loin',
+  setup (props, { refs, root }) {
     /**
      * context是setup函数的第二个参数，{ refs, root }是解构赋值的写法获取context里面对应的值
      * context里面包含以下内容(==后面的内容是vuw2.x的对应写法)
@@ -93,155 +93,186 @@ export default {
      */
     //验证验证码
     let checkcode = (rule, value, callback) => {
-      ruleForm.code = stripscript(value);
-      value = ruleForm.code;
-      if (value === "") {
-        callback(new Error("请输入验证码"));
+      ruleForm.code = stripscript(value)
+      value = ruleForm.code
+      if (value === '') {
+        callback(new Error('请输入验证码'))
       } else if (validateCodes(value)) {
-        callback(new Error("验证码格式有误"));
+        callback(new Error('验证码格式有误'))
       } else {
-        callback();
+        callback()
       }
-    };
+    }
     //验证用户名
     let validateUsername = (rule, value, callback) => {
-      if (value === "") {
-        callback(new Error("请输入用户名"));
+      if (value === '') {
+        callback(new Error('请输入用户名'))
       } else if (validateEmail(value)) {
-        callback(new Error("用户名格式有误"));
+        callback(new Error('用户名格式有误'))
       } else {
-        callback();
+        callback()
       }
-    };
+    }
     //验证密码
     let validatePass = (rule, value, callback) => {
-      ruleForm.pass = stripscript(value);
-      value = ruleForm.pass;
-      if (value === "") {
-        callback(new Error("请输入密码"));
+      ruleForm.pass = stripscript(value)
+      value = ruleForm.pass
+      if (value === '') {
+        callback(new Error('请输入密码'))
       } else if (validatePassword(value)) {
-        callback(new Error("密码为6至20位数字+字母"));
+        callback(new Error('密码为6至20位数字+字母'))
       } else {
-        callback();
+        callback()
       }
-    };
+    }
     //验证重复密码
     let validatePass2 = (rule, value, callback) => {
-      ruleForm.passWord = stripscript(value);
-      value = ruleForm.passWord;
-      if (value === "") {
-        callback(new Error("请输入重复密码"));
+      ruleForm.passWord = stripscript(value)
+      value = ruleForm.passWord
+      if (value === '') {
+        callback(new Error('请输入重复密码'))
       } else if (value !== ruleForm.pass) {
-        callback(new Error("二次密码不一致"));
+        callback(new Error('二次密码不一致'))
       } else {
-        callback();
+        callback()
       }
-    };
+    }
     //注册和登录模块的切换
     const menuchange = idx => {
-      menuIdx.value = idx;
-      refs.ruleForm.resetFields();
-    };
+      menuIdx.value = idx
+      refs.ruleForm.resetFields()
+    }
     //整个表单的校验函数
     const submitForm = formName => {
       refs[formName].validate(valid => {
         if (valid) {
-          let params = {
-            username: ruleForm.username,
-            password: ruleForm.pass,
-            code: ruleForm.code
-          };
-          Register(params)
-            .then(res => {
-              let data = res.data;
-              root.$message.success(data.message);
-            })
-            .catch(err => {
-              console.log(err);
-            });
+          console.log(menuIdx.value)
+          menuIdx.value === 0 ? Logins() : register()
         } else {
-          root.$message.error("表单填写不完整");
-          return false;
+          root.$message.error('表单填写不完整')
+          return false
         }
-      });
-    };
+      })
+    }
     //获取验证码
     const getSms = () => {
       //判断邮箱不能为空
-      if (ruleForm.username === "") {
-        root.$message.error("邮箱不能为空");
-        return false;
+      if (ruleForm.username === '') {
+        root.$message.error('邮箱不能为空')
+        return false
       }
       //判断邮箱格式
       if (validateEmail(ruleForm.username)) {
-        root.$message.error("邮箱格式有误");
-        return false;
+        root.$message.error('邮箱格式有误')
+        return false
       }
-      codeBtnStatus.status = true;
-      codeBtnStatus.text = "发送中";
+      codeBtnStatus.status = true
+      codeBtnStatus.text = '发送中'
       let params = {
         username: ruleForm.username,
-        module: menuIdx.value === 0 ? "login" : "register"
-      };
+        module: menuIdx.value === 0 ? 'login' : 'register'
+      }
       //请求获取验证码的接口
       GetSms(params)
         .then(res => {
-          let data = res.data;
-          root.$message.success(data.message);
+          let data = res.data
+          root.$message.success(data.message)
           //启用登录/注册按钮
-          loginBtn.value = false;
-          countDown(60);
-          console.log(data);
+          loginBtn.value = false
+          countDown(60)
+          console.log(data)
         })
         .catch(err => {
-          console.log(err);
-        });
-    };
+          console.log(err)
+        })
+    }
     //倒计时
     const countDown = num => {
-      let times = num;
-      console.log(times);
+      //判断定时器是否存在，存在就先消除上一次的定时器
+      if (timer.value) {
+        clearInterval(timer.value)
+      }
+      let times = num
       timer.value = setInterval(() => {
-        times--;
+        times--
         if (times === 0) {
-          clearInterval(timer.value);
-          codeBtnStatus.status = false;
-          codeBtnStatus.text = "再次获取";
+          clearInterval(timer.value)
+          codeBtnStatus.status = false
+          codeBtnStatus.text = '再次获取'
         } else {
-          codeBtnStatus.text = `倒计时${times}秒`;
+          codeBtnStatus.text = `倒计时${times}秒`
         }
-      }, 1000);
-    };
+      }, 1000)
+    }
+    //消除定时器
+    const clearcountDown = () => {
+      codeBtnStatus.status = false
+      codeBtnStatus.text = '获取验证码'
+      clearInterval(timer.value)
+    }
+    //请求注册的接口
+    const register = () => {
+      let params = {
+        username: ruleForm.username,
+        password: ruleForm.pass,
+        code: ruleForm.code
+      }
+      Register(params)
+        .then(res => {
+          let data = res.data
+          root.$message.success(data.message)
+          menuchange(0)
+          clearcountDown()
+        })
+        .catch(err => {
+          console.log(err)
+        })
+    }
+    //登录
+    async function Logins () {
+      let params = {
+        username: ruleForm.username,
+        password: ruleForm.pass,
+        code: ruleForm.code
+      }
+
+
+      let res = await Login(params)
+      if(res.data.resCode===0){
+        root.$message.success(res.data.message)
+      }else{
+        root.$message.error(res.data.message)
+      }
+      console.log(res)
+    }
     //声明对象类型的数据使用reactive
-    const loginList = reactive(["登录", "注册"]);
+    const loginList = reactive(['登录', '注册'])
     //声明基础数据类型变量时使用
-    const menuIdx = ref(0);
-    const loginBtn = ref(true);
-    // const codeBtnStatus = ref(false)
-    // const codeText = ref('获取验证码')
+    const menuIdx = ref(0)
+    const loginBtn = ref(true)
     //倒计时
-    const timer = ref(null);
+    const timer = ref(null)
     const codeBtnStatus = reactive({
       status: false,
-      text: "获取验证码"
-    });
+      text: '获取验证码'
+    })
     const ruleForm = reactive({
-      pass: "",
-      username: "",
-      code: "",
-      password: ""
-    });
+      pass: '',
+      username: '',
+      code: '',
+      password: ''
+    })
 
     const rules = reactive({
-      pass: [{ validator: validatePass, trigger: "blur" }],
-      username: [{ validator: validateUsername, trigger: "blur" }],
-      code: [{ validator: checkcode, trigger: "blur" }],
-      password: [{ validator: validatePass2, trigger: "blur" }]
-    });
+      pass: [{ validator: validatePass, trigger: 'blur' }],
+      username: [{ validator: validateUsername, trigger: 'blur' }],
+      code: [{ validator: checkcode, trigger: 'blur' }],
+      password: [{ validator: validatePass2, trigger: 'blur' }]
+    })
     //声明生命周期
     onMounted(() => {
       // GetSms()
-    });
+    })
     return {
       loginList,
       menuIdx,
@@ -252,9 +283,9 @@ export default {
       menuchange,
       submitForm,
       getSms
-    };
+    }
   }
-};
+}
 </script>
 
 <style lang="scss">
