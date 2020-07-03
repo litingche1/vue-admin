@@ -274,6 +274,9 @@ export default {
       let res = await Login(params)
       if (res.data.resCode === 0) {
         root.$message.success(res.data.message)
+        root.$router.push({
+          name:'Home'
+        })
       } else {
         root.$message.error(res.data.message)
       }
