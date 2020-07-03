@@ -6,10 +6,11 @@ const service = axios.create({
   baseURL: BASEURL
   // timeout: 1000,
 })
-
-// 添加请求拦截器
+//axiso文档中的拦截器部分代码(http://www.axios-js.com/zh-cn/docs/)
+// 添加请求拦截器(一般在请求头里面加token等)
 service.interceptors.request.use(
   config => {
+    config.headers['Token']=1122
     // 在发送请求之前做些什么
     return config
   },

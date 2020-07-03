@@ -7,11 +7,23 @@
           :key="idx"
           @click="menuchange(idx)"
           :class="{ current: idx === menuIdx }"
-        >{{ item }}</li>
+        >
+          {{ item }}
+        </li>
       </ul>
-      <el-form :model="ruleForm" status-icon :rules="rules" ref="ruleForm" class="login-ruleForm">
+      <el-form
+        :model="ruleForm"
+        status-icon
+        :rules="rules"
+        ref="ruleForm"
+        class="login-ruleForm"
+      >
         <el-form-item label="邮箱" prop="username" class="item-form">
-          <el-input type="text" v-model="ruleForm.username" autocomplete="off"></el-input>
+          <el-input
+            type="text"
+            v-model="ruleForm.username"
+            autocomplete="off"
+          ></el-input>
         </el-form-item>
         <el-form-item label="密码" prop="pass" class="item-form">
           <el-input
@@ -22,7 +34,12 @@
             maxlength="20"
           ></el-input>
         </el-form-item>
-        <el-form-item v-if="menuIdx === 1" label="重复密码" prop="password" class="item-form">
+        <el-form-item
+          v-if="menuIdx === 1"
+          label="重复密码"
+          prop="password"
+          class="item-form"
+        >
           <el-input
             type="password"
             v-model="ruleForm.password"
@@ -49,7 +66,8 @@
                 class="btn-submit"
                 @click="getSms"
                 :disabled="codeBtnStatus.status"
-              >{{ codeBtnStatus.text }}</el-button>
+                >{{ codeBtnStatus.text }}</el-button
+              >
             </el-col>
           </el-row>
         </el-form-item>
@@ -59,7 +77,8 @@
             @click="submitForm('ruleForm')"
             :disabled="loginBtn"
             class="margin-top-19 btn-submit"
-          >{{ menuIdx === 0 ? '登录' : '注册' }}</el-button>
+            >{{ menuIdx === 0 ? '登录' : '注册' }}</el-button
+          >
         </el-form-item>
       </el-form>
     </div>
@@ -75,9 +94,10 @@ import {
 } from '@/utils/validate'
 import { ref, reactive, onMounted } from '@vue/composition-api'
 import { GetSms, Register, Login } from '@/api/login'
+import sha1 from 'js-sha1' //sha1加密
 export default {
   name: 'loin',
-  setup (props, { refs, root }) {
+  setup(props, { refs, root }) {
     /**
      * context是setup函数的第二个参数，{ refs, root }是解构赋值的写法获取context里面对应的值
      * context里面包含以下内容(==后面的内容是vuw2.x的对应写法)
@@ -140,7 +160,8 @@ export default {
     //注册和登录模块的切换
     const menuchange = idx => {
       menuIdx.value = idx
-      refs.ruleForm.resetFields()
+      restFields()
+      clearcountDown()
     }
     //整个表单的校验函数
     const submitForm = formName => {
@@ -166,8 +187,10 @@ export default {
         root.$message.error('邮箱格式有误')
         return false
       }
-      codeBtnStatus.status = true
-      codeBtnStatus.text = '发送中'
+      codeButtonStatus({
+        status: true,
+        text: '发送中'
+      })
       let params = {
         username: ruleForm.username,
         module: menuIdx.value === 0 ? 'login' : 'register'
@@ -197,8 +220,10 @@ export default {
         times--
         if (times === 0) {
           clearInterval(timer.value)
-          codeBtnStatus.status = false
-          codeBtnStatus.text = '再次获取'
+          codeButtonStatus({
+            status: false,
+            text: '再次获取'
+          })
         } else {
           codeBtnStatus.text = `倒计时${times}秒`
         }
@@ -206,15 +231,26 @@ export default {
     }
     //消除定时器
     const clearcountDown = () => {
-      codeBtnStatus.status = false
-      codeBtnStatus.text = '获取验证码'
+      codeButtonStatus({
+        status: false,
+        text: '获取验证码'
+      })
       clearInterval(timer.value)
+    }
+    //重置表单
+    const restFields = () => {
+      refs.ruleForm.resetFields()
+    }
+    //更改验证码按钮状态
+    const codeButtonStatus = params => {
+      codeBtnStatus.status = params.status
+      codeBtnStatus.text = params.text
     }
     //请求注册的接口
     const register = () => {
       let params = {
         username: ruleForm.username,
-        password: ruleForm.pass,
+        password: sha1(ruleForm.pass),
         code: ruleForm.code
       }
       Register(params)
@@ -229,18 +265,16 @@ export default {
         })
     }
     //登录
-    async function Logins () {
+    async function Logins() {
       let params = {
         username: ruleForm.username,
-        password: ruleForm.pass,
+        password: sha1(ruleForm.pass),
         code: ruleForm.code
       }
-
-
       let res = await Login(params)
-      if(res.data.resCode===0){
+      if (res.data.resCode === 0) {
         root.$message.success(res.data.message)
-      }else{
+      } else {
         root.$message.error(res.data.message)
       }
       console.log(res)
