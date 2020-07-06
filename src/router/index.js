@@ -1,6 +1,6 @@
 import Vue from 'vue'
 import VueRouter from 'vue-router'
-
+import Layout from '@/views/Layout'
 Vue.use(VueRouter)
 
 const routes = [
@@ -29,7 +29,7 @@ const routes = [
     path: '/home',
     name: 'Home',
     // redirect: 'index',
-    component: () => import('../views/Layout/index.vue'),
+    component: Layout,
     meta:{
      name:'控制台'
     },
@@ -48,7 +48,7 @@ const routes = [
   {
     path: '/Infor',
     name: 'Infor',
-    component: () => import('../views/Layout/index.vue'),
+    component: Layout,
     meta:{
      name:'信息管理'
     },
@@ -75,7 +75,7 @@ const routes = [
   {
     path: '/user',
     name: 'User',
-    component: () => import('../views/Layout/index.vue'),
+    component: Layout,
     meta:{
      name:'用户管理'
     },

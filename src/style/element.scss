@@ -7,7 +7,7 @@
     }
 }
 
-.el-submenu.is-opened {
+.el-submenu.is-active.is-opened {
     .el-submenu__title {
         background: $mainColor !important;
     }

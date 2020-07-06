@@ -11,44 +11,49 @@
       router
     >
       <template v-for="(item,idx) in routerList">
-        <el-submenu v-if="!item.hidden" :key="idx" :index="idx">
+        <el-submenu v-if="!item.hidden" :key="idx" :index="idx+''">
           <template slot="title">
             <i class="el-icon-location"></i>
             <span>{{item.meta.name}}</span>
           </template>
-          <el-menu-item v-for="(submenuItem,idx2) in item.children" :key="idx2" :index="submenuItem.path">{{submenuItem.meta.name}}</el-menu-item>
+          <el-menu-item
+            v-for="(submenuItem,idx2) in item.children"
+            :key="idx2"
+            :index="submenuItem.path"
+          >{{submenuItem.meta.name}}</el-menu-item>
         </el-submenu>
       </template>
     </el-menu>
+    <svg-icon/>
   </div>
 </template>
 
 <script>
-import { reactive, } from '@vue/composition-api'
+import { reactive } from "@vue/composition-api";
 export default {
-  name: 'layoutnav',
-  setup (props, { root }) {
+  name: "layoutnav",
+  setup(props, { root }) {
     /**
      * data数据
      */
-    const routerList = reactive(root.$router.options.routes)
-    console.log(root.$router.options.routes)
+    const routerList = reactive(root.$router.options.routes);
+    console.log(root.$router.options.routes);
     /**
      * 函数
      */
-    function handleOpen (key, keyPath) {
-      console.log(key, keyPath)
+    function handleOpen(key, keyPath) {
+      console.log(key, keyPath);
     }
-    function handleClose (key, keyPath) {
-      console.log(key, keyPath)
+    function handleClose(key, keyPath) {
+      console.log(key, keyPath);
     }
     return {
       handleOpen,
       handleClose,
       routerList
-    }
+    };
   }
-}
+};
 </script>
 <style lang="scss" scoped>
 #nav-warp {
