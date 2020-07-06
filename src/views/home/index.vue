@@ -1,25 +1,15 @@
 <template>
-<div></div>
+  <div>
+    我是控制台home
+  </div>
 </template>
 
 <script>
 export default {
-data() {
-return {
+  name:'home',
+  setup(){
 
-}
-},
-created() {
-
-},
-mounted() {
-
-},
-methods: {
-
-},
+  }
 }
 </script>
-<style lang='scss' scoped>
-
-</style>
+<style lang="scss" scoped></style>

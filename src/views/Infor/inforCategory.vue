@@ -1,16 +1,16 @@
 <template>
-  <div id="user-warp">
-     用户列表
+  <div id="inforCategory-warp">
+     信息分类
   </div>
 </template>
 
 <script>
 export default {
- name:'user'
+ name:'inforCategory'
 }
 </script>
 <style lang="scss" scoped>
-#user-warp {
+#inforCategory-warp {
 
 }
 </style>
