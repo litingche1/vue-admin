@@ -4,7 +4,9 @@
          <svg-icon iconClass="menu" iconName="menu" />
       </div>
       <div class="pull-right">
-        <div class="pull-left avatar"><img src="../../../assets/home/tx.jpg" alt=""></div>
+        <div class="pull-left avatar">
+          <!-- <img src="../../../assets/home/tx.jpg" alt=""> -->
+          </div>
         <div class="user-infor pull-left">管理员</div>
         <div class="header-icon pull-left">
           <svg-icon iconClass="dropout" iconName="dropout" />
@@ -42,9 +44,12 @@ export default {
     border-right:1px solid #ededed;
   }
   .avatar{
-    width:75px;
-    height: 75px;
+    width:50px;
+    height: 50px;
     border-radius: 50% 50%;
+    background:url('../../../assets/home/tx.jpg');
+    background-size:100% 100%;
+    margin-top: 12.5px;
     img{
       width:100%;
       height:100%;
