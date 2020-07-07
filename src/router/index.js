@@ -31,7 +31,8 @@ const routes = [
     // redirect: 'index',
     component: Layout,
     meta:{
-     name:'控制台'
+     name:'控制台',
+     icon:'home'
     },
     children: [
       {
@@ -50,7 +51,8 @@ const routes = [
     name: 'Infor',
     component: Layout,
     meta:{
-     name:'信息管理'
+     name:'信息管理',
+     icon:'infor'
     },
     children: [
       {
@@ -77,7 +79,8 @@ const routes = [
     name: 'User',
     component: Layout,
     meta:{
-     name:'用户管理'
+     name:'用户管理',
+     icon:'user'
     },
     children: [
       {
