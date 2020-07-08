@@ -1,2 +1,7 @@
 $mainwidth:250px;
 $mainColor:#f56c6c;
+$layoutHeader: 75px;
+$mainWidthMin:64px;
+@mixin webkit($name,$value){
+    -webkit-#{$name}: $value;
+}

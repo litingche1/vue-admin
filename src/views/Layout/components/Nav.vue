@@ -1,10 +1,12 @@
 <template>
   <div id="nav-warp">
+    <div class="login">
+      <img src="../../../assets/logo.png" alt="" />
+    </div>
     <el-menu
       default-active="2"
       class="el-menu-vertical-demo"
-      @open="handleOpen"
-      @close="handleClose"
+      :collapse="collapse"
       background-color="transparent"
       text-color="#fff"
       active-text-color="#fff"
@@ -31,7 +33,7 @@
 </template>
 
 <script>
-import { reactive } from '@vue/composition-api'
+import { reactive, computed } from '@vue/composition-api'
 export default {
   name: 'layoutnav',
   setup(props, { root }) {
@@ -39,20 +41,13 @@ export default {
      * data数据
      */
     const routerList = reactive(root.$router.options.routes)
-    console.log(root.$router.options.routes)
+    const collapse = computed(() => root.$store.state.isCollapae)
     /**
      * 函数
      */
-    function handleOpen(key, keyPath) {
-      console.log(key, keyPath)
-    }
-    function handleClose(key, keyPath) {
-      console.log(key, keyPath)
-    }
     return {
-      handleOpen,
-      handleClose,
-      routerList
+      routerList,
+      collapse
     }
   }
 }
@@ -65,10 +60,39 @@ export default {
   width: $mainwidth;
   height: 100vh;
   background: #344a5f;
+  @include webkit(transition, all 0.3s ease 0s);
   svg {
     color: #fff;
     font-size: 20px;
     margin-right: 10px;
+  }
+  .login {
+    width: 100px;
+    height: 100px;
+    margin: 10px auto;
+    img {
+      width: 100%;
+      height: 100%;
+    }
+  }
+}
+.open {
+  #nav-warp {
+    width: $mainwidth;
+  }
+}
+.close {
+  #nav-warp {
+    width: $mainWidthMin;
+    .login {
+      width: 40px;
+      height: 40px;
+      margin: 10px auto;
+      img {
+        width: 100%;
+        height: 100%;
+      }
+    }
   }
 }
 </style>

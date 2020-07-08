@@ -1,12 +1,13 @@
 <template>
-  <div id="layout-warp">
-      <LayoutHeader></LayoutHeader>
-      <LayoutMain></LayoutMain>
-      <LayoutNav></LayoutNav>
+  <div id="layout-warp" :class="[menuStatus ? 'close' : 'open']">
+    <LayoutHeader></LayoutHeader>
+    <LayoutMain></LayoutMain>
+    <LayoutNav></LayoutNav>
   </div>
 </template>
 
 <script>
+import { computed } from '@vue/composition-api'
 import LayoutHeader from './components/Header'
 import LayoutMain from './components/Main'
 import LayoutNav from './components/Nav'
@@ -16,6 +17,12 @@ export default {
     LayoutHeader,
     LayoutMain,
     LayoutNav
+  },
+  setup(props, { root }) {
+    const menuStatus = computed(() => root.$store.state.isCollapae)
+    return {
+      menuStatus
+    }
   }
 }
 </script>
