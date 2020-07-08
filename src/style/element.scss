@@ -12,3 +12,19 @@
         background: $mainColor !important;
     }
 }
+.close {
+    .el-submenu {
+        &.is-opened {
+            > .el-submenu__title {
+                background-color: $mainColor !important;
+            }
+        }
+    }
+}
+.el-menu--vertical {
+    .el-menu { background-color: $mainColor !important; }
+    .el-menu-item { line-height: 56px; }
+    .el-menu-item:hover {
+        background-color: $mainColor !important;
+    }
+}
