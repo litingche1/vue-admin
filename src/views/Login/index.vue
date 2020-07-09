@@ -7,23 +7,11 @@
           :key="idx"
           @click="menuchange(idx)"
           :class="{ current: idx === menuIdx }"
-        >
-          {{ item }}
-        </li>
+        >{{ item }}</li>
       </ul>
-      <el-form
-        :model="ruleForm"
-        status-icon
-        :rules="rules"
-        ref="ruleForm"
-        class="login-ruleForm"
-      >
+      <el-form :model="ruleForm" status-icon :rules="rules" ref="ruleForm" class="login-ruleForm">
         <el-form-item label="邮箱" prop="username" class="item-form">
-          <el-input
-            type="text"
-            v-model="ruleForm.username"
-            autocomplete="off"
-          ></el-input>
+          <el-input type="text" v-model="ruleForm.username" autocomplete="off"></el-input>
         </el-form-item>
         <el-form-item label="密码" prop="pass" class="item-form">
           <el-input
@@ -34,12 +22,7 @@
             maxlength="20"
           ></el-input>
         </el-form-item>
-        <el-form-item
-          v-if="menuIdx === 1"
-          label="重复密码"
-          prop="password"
-          class="item-form"
-        >
+        <el-form-item v-if="menuIdx === 1" label="重复密码" prop="password" class="item-form">
           <el-input
             type="password"
             v-model="ruleForm.password"
@@ -66,8 +49,7 @@
                 class="btn-submit"
                 @click="getSms"
                 :disabled="codeBtnStatus.status"
-                >{{ codeBtnStatus.text }}</el-button
-              >
+              >{{ codeBtnStatus.text }}</el-button>
             </el-col>
           </el-row>
         </el-form-item>
@@ -77,8 +59,7 @@
             @click="submitForm('ruleForm')"
             :disabled="loginBtn"
             class="margin-top-19 btn-submit"
-            >{{ menuIdx === 0 ? '登录' : '注册' }}</el-button
-          >
+          >{{ menuIdx === 0 ? '登录' : '注册' }}</el-button>
         </el-form-item>
       </el-form>
     </div>
@@ -93,11 +74,11 @@ import {
   validateCodes
 } from '@/utils/validate'
 import { ref, reactive, onMounted } from '@vue/composition-api'
-import { GetSms, Register, Login } from '@/api/login'
+import { GetSms, Register } from '@/api/login'
 import sha1 from 'js-sha1' //sha1加密
 export default {
   name: 'loin',
-  setup(props, { refs, root }) {
+  setup (props, { refs, root }) {
     /**
      * context是setup函数的第二个参数，{ refs, root }是解构赋值的写法获取context里面对应的值
      * context里面包含以下内容(==后面的内容是vuw2.x的对应写法)
@@ -265,22 +246,23 @@ export default {
         })
     }
     //登录
-    async function Logins() {
+    function Logins () {
       let params = {
         username: ruleForm.username,
         password: sha1(ruleForm.pass),
         code: ruleForm.code
       }
-      let res = await Login(params)
-      if (res.data.resCode === 0) {
-        root.$message.success(res.data.message)
-        root.$router.push({
-          name:'Home'
+      root.$store
+        .dispatch('login', params)
+        .then(res => {
+          root.$message.success(res.data.message)
+          root.$router.push({
+            name: 'Home'
+          })
         })
-      } else {
-        root.$message.error(res.data.message)
-      }
-      console.log(res)
+        .catch(err => {
+          root.$message.error(err.data.message)
+        })
     }
     //声明对象类型的数据使用reactive
     const loginList = reactive(['登录', '注册'])

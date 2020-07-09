@@ -19,7 +19,7 @@ export default {
     LayoutNav
   },
   setup(props, { root }) {
-    const menuStatus = computed(() => root.$store.state.isCollapae)
+    const menuStatus = computed(() => root.$store.state.login.isCollapae)
     return {
       menuStatus
     }
