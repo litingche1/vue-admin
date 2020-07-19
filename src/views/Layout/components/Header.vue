@@ -20,7 +20,7 @@ export default {
   name: 'layoutheader',
   setup(props, { root }) {
     const NavStatus = () => {
-      root.$store.commit('SET_COLLAPSE')
+      root.$store.commit('login/SET_COLLAPSE')
     }
     return {
       NavStatus

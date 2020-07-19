@@ -253,7 +253,7 @@ export default {
         code: ruleForm.code
       }
       root.$store
-        .dispatch('login', params)
+        .dispatch('login/login', params)
         .then(res => {
           root.$message.success(res.data.message)
           root.$router.push({
