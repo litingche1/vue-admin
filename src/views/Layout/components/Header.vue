@@ -7,7 +7,7 @@
       <div class="pull-left avatar">
         <img src="../../../assets/home/tx.jpg" alt="" />
       </div>
-      <div class="user-infor pull-left">管理员</div>
+      <div class="user-infor pull-left">{{userName}}</div>
       <div class="header-icon pull-left">
         <svg-icon iconClass="dropout" iconName="dropout" />
       </div>
@@ -16,14 +16,17 @@
 </template>
 
 <script>
+import {  computed } from '@vue/composition-api'
 export default {
   name: 'layoutheader',
   setup(props, { root }) {
+    const userName = computed(()=>root.$store.state.login.userName)
     const NavStatus = () => {
       root.$store.commit('login/SET_COLLAPSE')
     }
     return {
-      NavStatus
+      NavStatus,
+      userName
     }
   }
 }

@@ -71,7 +71,7 @@ module.exports = {
     proxy: {
       '/api': {
         /* 目标代理服务器地址 */
-        target: `http://www.web-jshtml.cn/vue_admin_api`,
+        target: `http://www.web-jshtml.cn/vue_admin_api/token`,
         /* 允许跨域 */
         changeOrigin: true,
         pathRewrite: {
