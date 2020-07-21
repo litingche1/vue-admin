@@ -8,7 +8,7 @@
         <img src="../../../assets/home/tx.jpg" alt="" />
       </div>
       <div class="user-infor pull-left">{{userName}}</div>
-      <div class="header-icon pull-left">
+      <div class="header-icon pull-left" @click="exit">
         <svg-icon iconClass="dropout" iconName="dropout" />
       </div>
     </div>
@@ -24,9 +24,17 @@ export default {
     const NavStatus = () => {
       root.$store.commit('login/SET_COLLAPSE')
     }
+    const exit = ()=>{
+      root.$store.dispatch('login/loginout').then(()=>{
+        root.$router.push({
+            name: 'Login'
+          })
+      })
+    }
     return {
       NavStatus,
-      userName
+      userName,
+      exit
     }
   }
 }
