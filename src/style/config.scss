@@ -1,7 +1,18 @@
-$mainwidth:250px;
-$mainColor:#f56c6c;
+$mainwidth: 250px;
+$mainColor: #f56c6c;
 $layoutHeader: 75px;
-$mainWidthMin:64px;
-@mixin webkit($name,$value){
-    -webkit-#{$name}: $value;
+$mainWidthMin: 64px;
+@mixin webkit($name, $value) {
+  -webkit-#{$name}: $value;
+}
+@mixin labelDom($align, $width, $line-height: 'normal') {
+  label {
+    float: left;
+    line-height: $line-height + px;
+    width: $width + px;
+    text-align: $align;
+  }
+  .warp-content {
+    margin-left: $width + px;
+  }
 }
