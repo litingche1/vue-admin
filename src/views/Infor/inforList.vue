@@ -1,11 +1,16 @@
 <template>
   <div id="inforList-warp">
-    <el-row :gutter="16">
+    <!-- 头部 -->
+    <el-row :gutter="14" class="inforList-warp-header">
       <el-col :span="4">
         <div class="label-warp category">
           <label for>类别&nbsp;&nbsp;:</label>
           <div class="warp-content">
-            <el-select v-model="categoryvalue" placeholder="请选择" style="width:100%">
+            <el-select
+              v-model="categoryvalue"
+              placeholder="请选择"
+              style="width:100%"
+            >
               <el-option
                 v-for="item in options"
                 :key="item.value"
@@ -18,7 +23,7 @@
       </el-col>
       <el-col :span="7">
         <div class="label-warp date">
-          <label for="" class="description">日期&nbsp;&nbsp;:</label>
+          <label for class="description">日期&nbsp;&nbsp;:</label>
           <div class="warp-content">
             <el-date-picker
               v-model="datevalue"
@@ -31,11 +36,15 @@
           </div>
         </div>
       </el-col>
-      <el-col :span="3">
+      <el-col :span="4">
         <div class="label-warp keyword">
-          <label for="" class="description">关键字&nbsp;&nbsp;:</label>
+          <label for class="description">关键字&nbsp;&nbsp;:</label>
           <div class="warp-content">
-            <el-select v-model="keywordvalue" placeholder="请选择" style="width:100%">
+            <el-select
+              v-model="keywordvalue"
+              placeholder="请选择"
+              style="width:100%"
+            >
               <el-option
                 v-for="item in keywordoptions"
                 :key="item.value"
@@ -47,75 +56,151 @@
         </div>
       </el-col>
       <el-col :span="3">
-        <el-input v-model="input" placeholder="请输入内容" style="width:100%"></el-input>
+        <el-input
+          v-model="input"
+          placeholder="请输入内容"
+          style="width:100%"
+        ></el-input>
       </el-col>
       <el-col :span="2">
         <el-button type="danger" style="width:100%">搜索</el-button>
       </el-col>
-      <el-col :span="3">
-      <div class="div-box"></div>
+      <el-col :span="2">
+        <div class="div-box"></div>
       </el-col>
       <el-col :span="2">
-        <el-button type="danger" style="width:100%" class="pull-right">新增</el-button>
+        <el-button type="danger" style="width:100%" class="pull-right"
+          >新增</el-button
+        >
+      </el-col>
+    </el-row>
+    <!-- 内容 -->
+    <el-table :data="tableData" border style="width: 100%">
+      <el-table-column type="selection" width="45"></el-table-column>
+      <el-table-column prop="title" label="标题" width="830"></el-table-column>
+      <el-table-column prop="types" label="类型" width="130"></el-table-column>
+      <el-table-column prop="date" label="日期" width="237"></el-table-column>
+      <el-table-column prop="user" label="管理员" width="115"></el-table-column>
+      <el-table-column label="操作">
+        <template>
+          <el-button size="mini" type="danger">删除</el-button>
+          <el-button size="mini" type="success">编辑</el-button>
+        </template>
+      </el-table-column>
+    </el-table>
+    <div class="black-space-30"></div>
+    <el-row>
+      <el-col :span="12">
+        <el-button size="medium">批量删除</el-button>
+      </el-col>
+      <el-col :span="12">
+        <el-pagination
+          background
+          class="pull-right"
+          @size-change="handleSizeChange"
+          @current-change="handleCurrentChange"
+          :page-sizes="[10, 20, 50, 100]"
+          layout="total, sizes, prev, pager, next, jumper"
+          :total="1000"
+        >
+        </el-pagination>
       </el-col>
     </el-row>
   </div>
 </template>
 
 <script>
-import { ref, reactive } from "@vue/composition-api";
+import { ref, reactive } from '@vue/composition-api'
 export default {
-  name: "inforList",
+  name: 'inforList',
   setup() {
-    const categoryvalue = ref("");//类别选中的值
-    const keywordvalue = ref("");//关键字选中的值
-    const datevalue = ref("");//日期框选中的值
-    const input = ref("");
+    const categoryvalue = ref('') //类别选中的值
+    const keywordvalue = ref('') //关键字选中的值
+    const datevalue = ref('') //日期框选中的值
+    const input = ref('')
     const options = reactive([
       {
-        value: "选项1",
-        label: "国际信息"
+        value: '选项1',
+        label: '国际信息'
       },
       {
-        value: "选项2",
-        label: "国内信息"
+        value: '选项2',
+        label: '国内信息'
       },
       {
-        value: "选项3",
-        label: "行业信息"
+        value: '选项3',
+        label: '行业信息'
       }
-    ]);
-        const keywordoptions = reactive([
+    ])
+    const keywordoptions = reactive([
       {
-        value: "选项1",
-        label: "ID"
+        value: '选项1',
+        label: 'ID'
       },
       {
-        value: "选项2",
-        label: "标题"
+        value: '选项2',
+        label: '标题'
       }
-    ]);
+    ])
+    const tableData = reactive([
+      {
+        date: '2016-05-02',
+        user: '王小虎',
+        title: '上海市普陀区金沙江路 1518 弄',
+        types: '类型1'
+      },
+      {
+        date: '2016-05-02',
+        user: '王小虎',
+        title: '上海市普陀区金沙江路 1518 弄',
+        types: '类型1'
+      },
+      {
+        date: '2016-05-02',
+        user: '王小虎',
+        title: '上海市普陀区金沙江路 1518 弄',
+        types: '类型1'
+      },
+      {
+        date: '2016-05-02',
+        user: '王小虎',
+        title: '上海市普陀区金沙江路 1518 弄',
+        types: '类型1'
+      }
+    ])
+    const handleSizeChange = val => {
+      console.log(`每页 ${val} 条`)
+    }
+    const handleCurrentChange = val => {
+      console.log(`每页 ${val} 条`)
+    }
     return {
       categoryvalue,
       keywordvalue,
       datevalue,
       input,
       options,
-      keywordoptions
-    };
+      keywordoptions,
+      tableData,
+      handleSizeChange,
+      handleCurrentChange
+    }
   }
-};
+}
 </script>
 <style lang="scss" scoped>
 #inforList-warp {
-   .description{
-      padding-right:5px;
-      box-sizing: border-box;
-    }
-    .div-box{
-      padding:8px;
-      box-sizing: border-box;
-    }
+  .description {
+    padding-right: 5px;
+    box-sizing: border-box;
+  }
+  .div-box {
+    padding: 8px;
+    box-sizing: border-box;
+  }
+  .inforList-warp-header {
+    margin-bottom: 18px;
+  }
   .category {
     @include labelDom(left, 60, 40);
   }

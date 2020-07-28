@@ -35,3 +35,19 @@
 .el-input__inner{
     border: 1px solid #DCDFE6 !important;
 }
+div .el-table{
+    td,th{
+        text-align: center;
+    }
+    th{
+        font-weight: bold;
+        color:#344a5f;
+    }
+    td{
+        font-size:14px;
+    }
+}
+// .el-table--fit {
+//     border-left: 0;
+//     border-top: 0;
+// }
