@@ -69,7 +69,7 @@
         <div class="div-box"></div>
       </el-col>
       <el-col :span="2">
-        <el-button type="danger" style="width:100%" class="pull-right"
+        <el-button type="danger" style="width:100%" class="pull-right" @click="showtck"
           >新增</el-button
         >
       </el-col>
@@ -106,18 +106,24 @@
         </el-pagination>
       </el-col>
     </el-row>
+    <Dialogs :showlog.sync="dialogShow"/>
   </div>
 </template>
 
 <script>
+import Dialogs from './dialog/index'
 import { ref, reactive } from '@vue/composition-api'
 export default {
   name: 'inforList',
+  components:{
+Dialogs
+  },
   setup() {
     const categoryvalue = ref('') //类别选中的值
     const keywordvalue = ref('') //关键字选中的值
     const datevalue = ref('') //日期框选中的值
     const input = ref('')
+    const dialogShow = ref(false) //日期框选中的值
     const options = reactive([
       {
         value: '选项1',
@@ -174,16 +180,21 @@ export default {
     const handleCurrentChange = val => {
       console.log(`每页 ${val} 条`)
     }
+    const showtck = ()=>{
+      dialogShow.value=true
+    }
     return {
       categoryvalue,
       keywordvalue,
       datevalue,
       input,
+      dialogShow,
       options,
       keywordoptions,
       tableData,
       handleSizeChange,
-      handleCurrentChange
+      handleCurrentChange,
+      showtck
     }
   }
 }
