@@ -194,7 +194,7 @@ Dialogs
       tableData,
       handleSizeChange,
       handleCurrentChange,
-      showtck
+      showtck,
     }
   }
 }
