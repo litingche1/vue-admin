@@ -6,11 +6,7 @@
         <div class="label-warp category">
           <label for>类别&nbsp;&nbsp;:</label>
           <div class="warp-content">
-            <el-select
-              v-model="categoryvalue"
-              placeholder="请选择"
-              style="width:100%"
-            >
+            <el-select v-model="categoryvalue" placeholder="请选择" style="width:100%">
               <el-option
                 v-for="item in options"
                 :key="item.value"
@@ -40,11 +36,7 @@
         <div class="label-warp keyword">
           <label for class="description">关键字&nbsp;&nbsp;:</label>
           <div class="warp-content">
-            <el-select
-              v-model="keywordvalue"
-              placeholder="请选择"
-              style="width:100%"
-            >
+            <el-select v-model="keywordvalue" placeholder="请选择" style="width:100%">
               <el-option
                 v-for="item in keywordoptions"
                 :key="item.value"
@@ -56,11 +48,7 @@
         </div>
       </el-col>
       <el-col :span="3">
-        <el-input
-          v-model="input"
-          placeholder="请输入内容"
-          style="width:100%"
-        ></el-input>
+        <el-input v-model="input" placeholder="请输入内容" style="width:100%"></el-input>
       </el-col>
       <el-col :span="2">
         <el-button type="danger" style="width:100%">搜索</el-button>
@@ -69,9 +57,7 @@
         <div class="div-box"></div>
       </el-col>
       <el-col :span="2">
-        <el-button type="danger" style="width:100%" class="pull-right" @click="showtck"
-          >新增</el-button
-        >
+        <el-button type="danger" style="width:100%" class="pull-right" @click="showtck">新增</el-button>
       </el-col>
     </el-row>
     <!-- 内容 -->
@@ -83,8 +69,8 @@
       <el-table-column prop="user" label="管理员" width="115"></el-table-column>
       <el-table-column label="操作">
         <template>
-          <el-button size="mini" type="danger">删除</el-button>
-          <el-button size="mini" type="success">编辑</el-button>
+          <el-button size="mini" type="danger" @click="deleteItem()">删除</el-button>
+          <el-button size="mini" type="success" @click="editItem()">编辑</el-button>
         </template>
       </el-table-column>
     </el-table>
@@ -102,11 +88,10 @@
           :page-sizes="[10, 20, 50, 100]"
           layout="total, sizes, prev, pager, next, jumper"
           :total="1000"
-        >
-        </el-pagination>
+        ></el-pagination>
       </el-col>
     </el-row>
-    <Dialogs :showlog.sync="dialogShow"/>
+    <Dialogs :showlog.sync="dialogShow" />
   </div>
 </template>
 
@@ -115,10 +100,11 @@ import Dialogs from './dialog/index'
 import { ref, reactive } from '@vue/composition-api'
 export default {
   name: 'inforList',
-  components:{
-Dialogs
+  components: {
+    Dialogs
   },
-  setup() {
+  setup (props,{ root }) {
+    console.log(props)
     const categoryvalue = ref('') //类别选中的值
     const keywordvalue = ref('') //关键字选中的值
     const datevalue = ref('') //日期框选中的值
@@ -180,8 +166,29 @@ Dialogs
     const handleCurrentChange = val => {
       console.log(`每页 ${val} 条`)
     }
-    const showtck = ()=>{
-      dialogShow.value=true
+    const showtck = () => {
+      dialogShow.value = true
+    }
+    const deleteItem = () => {
+      root.$confirm('此操作将永久删除该文件, 是否继续?', '提示', {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        type: 'warning',
+        center: true
+      }).then(() => {
+        root.$message({
+          type: 'success',
+          message: '删除成功!'
+        });
+      }).catch(() => {
+        root.$message({
+          type: 'info',
+          message: '已取消删除'
+        });
+      });
+    }
+    const editItem = () => {
+
     }
     return {
       categoryvalue,
@@ -195,6 +202,9 @@ Dialogs
       handleSizeChange,
       handleCurrentChange,
       showtck,
+      deleteItem,
+      editItem
+
     }
   }
 }
