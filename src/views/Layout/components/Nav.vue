@@ -41,6 +41,7 @@ export default {
      * data数据
      */
     const routerList = reactive(root.$router.options.routes)
+    console.log(routerList)
     const collapse = computed(() => root.$store.state.login.isCollapae)
     /**
      * 函数

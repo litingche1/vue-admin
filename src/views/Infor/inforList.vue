@@ -6,7 +6,11 @@
         <div class="label-warp category">
           <label for>类别&nbsp;&nbsp;:</label>
           <div class="warp-content">
-            <el-select v-model="categoryvalue" placeholder="请选择" style="width:100%">
+            <el-select
+              v-model="categoryvalue"
+              placeholder="请选择"
+              style="width:100%"
+            >
               <el-option
                 v-for="item in options"
                 :key="item.value"
@@ -36,7 +40,11 @@
         <div class="label-warp keyword">
           <label for class="description">关键字&nbsp;&nbsp;:</label>
           <div class="warp-content">
-            <el-select v-model="keywordvalue" placeholder="请选择" style="width:100%">
+            <el-select
+              v-model="keywordvalue"
+              placeholder="请选择"
+              style="width:100%"
+            >
               <el-option
                 v-for="item in keywordoptions"
                 :key="item.value"
@@ -48,7 +56,11 @@
         </div>
       </el-col>
       <el-col :span="3">
-        <el-input v-model="input" placeholder="请输入内容" style="width:100%"></el-input>
+        <el-input
+          v-model="input"
+          placeholder="请输入内容"
+          style="width:100%"
+        ></el-input>
       </el-col>
       <el-col :span="2">
         <el-button type="danger" style="width:100%">搜索</el-button>
@@ -57,7 +69,13 @@
         <div class="div-box"></div>
       </el-col>
       <el-col :span="2">
-        <el-button type="danger" style="width:100%" class="pull-right" @click="showtck">新增</el-button>
+        <el-button
+          type="danger"
+          style="width:100%"
+          class="pull-right"
+          @click="showtck"
+          >新增</el-button
+        >
       </el-col>
     </el-row>
     <!-- 内容 -->
@@ -69,15 +87,19 @@
       <el-table-column prop="user" label="管理员" width="115"></el-table-column>
       <el-table-column label="操作">
         <template>
-          <el-button size="mini" type="danger" @click="deleteItem()">删除</el-button>
-          <el-button size="mini" type="success" @click="editItem()">编辑</el-button>
+          <el-button size="mini" type="danger" @click="deleteItem()"
+            >删除</el-button
+          >
+          <el-button size="mini" type="success" @click="editItem()"
+            >编辑</el-button
+          >
         </template>
       </el-table-column>
     </el-table>
     <div class="black-space-30"></div>
     <el-row>
       <el-col :span="12">
-        <el-button size="medium">批量删除</el-button>
+        <el-button size="medium" @click="deleteAll()">批量删除</el-button>
       </el-col>
       <el-col :span="12">
         <el-pagination
@@ -97,14 +119,19 @@
 
 <script>
 import Dialogs from './dialog/index'
-import { ref, reactive } from '@vue/composition-api'
+import { ref, reactive, watchEffect } from '@vue/composition-api'
+import { global } from '@/utils/globla.js'
 export default {
   name: 'inforList',
   components: {
     Dialogs
   },
-  setup (props,{ root }) {
+  setup(props) {
     console.log(props)
+    const { str: zfc, confirm: confirmed } = global()
+    watchEffect(() => {
+      console.log(zfc.value)
+    })
     const categoryvalue = ref('') //类别选中的值
     const keywordvalue = ref('') //关键字选中的值
     const datevalue = ref('') //日期框选中的值
@@ -166,29 +193,33 @@ export default {
     const handleCurrentChange = val => {
       console.log(`每页 ${val} 条`)
     }
+    //新增
     const showtck = () => {
       dialogShow.value = true
     }
+    //表格删除按钮
     const deleteItem = () => {
-      root.$confirm('此操作将永久删除该文件, 是否继续?', '提示', {
-        confirmButtonText: '确定',
-        cancelButtonText: '取消',
-        type: 'warning',
-        center: true
-      }).then(() => {
-        root.$message({
-          type: 'success',
-          message: '删除成功!'
-        });
-      }).catch(() => {
-        root.$message({
-          type: 'info',
-          message: '已取消删除'
-        });
-      });
+      confirmed({
+        content: '此操作将永久删除该文件, 是否继续?',
+        id: 42222,
+        tip: '警告'
+      })
     }
+    //表格编辑
     const editItem = () => {
-
+      dialogShow.value = true
+    }
+    //批量删除
+    const deleteAll = () => {
+      confirmed({
+        content: '此操作将永久删除所选择的文件, 是否继续?',
+        id: 42222,
+        tip: '警告',
+        fn:confirms,
+      })
+    }
+    const confirms = val =>{
+       console.log(val)
     }
     return {
       categoryvalue,
@@ -203,8 +234,8 @@ export default {
       handleCurrentChange,
       showtck,
       deleteItem,
-      editItem
-
+      editItem,
+      deleteAll
     }
   }
 }
