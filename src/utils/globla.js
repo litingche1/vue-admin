@@ -13,7 +13,10 @@ export function global() {
         str.value = params.id
         params.fn && params.fn(params.id)
       })
-      .catch(() => {})
+      .catch(() => {
+        console.log('取消')
+        params.catchfn && params.catchfn()
+      })
   }
   return {
     str,
