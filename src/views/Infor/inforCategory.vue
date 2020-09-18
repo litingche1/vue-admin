@@ -84,10 +84,12 @@
                 categoryName: '',
                 secondaryCategoryName: ''
             })
+            //分类列表
             const categoryData = reactive({
                 item: [],
-                currentdata: {},
             })
+            //确定选中的编辑对象
+            let currentdata = reactive({})
             const categoryName = ref(true)
             const secondaryCategoryName = ref(true)
             const button_loading = ref(false)
@@ -97,7 +99,6 @@
             const deleteItemId = ref('')
             const button_status = ref('')
             const submit = () => {
-                console.log(button_status.value)
                 if (button_status.value === 'addFirstCategory') {
                     addFristCategorys()
                 } else if (button_status.value === 'editFirstCategory') {
@@ -153,7 +154,6 @@
                     .then(res => {
                         if (res.data.resCode === 0) {
                             categoryData.item = res.data.data.data
-                            console.log(res.data.data.data)
                         }
                     })
                     .catch(err => {
@@ -197,12 +197,13 @@
                 button_disabled.value = false
                 categoryName_disabled.value = false
                 secondaryCategoryName_disabled.value = false
-                categoryData.currentdata = param.data;
-                formLabelAlign.categoryName = categoryData.currentdata.category_name
-                console.log(categoryData.currentdata)
+                //当前选中分类的信息存在currentdata对象中
+                currentdata = param.data;
+                formLabelAlign.categoryName = currentdata.category_name
             }
+            //编辑一级分类操作方法
             const editFirstCategory = () => {
-                if (!categoryData.currentdata.id) {
+                if (!currentdata.id) {
                     root.$message({
                         message: '未选中一级分类',
                         type: 'error'
@@ -210,10 +211,9 @@
                     return
                 }
                 let resdata = {
-                    id: categoryData.currentdata.id,
+                    id: currentdata.id,
                     categoryName: formLabelAlign.categoryName
                 }
-                alert(categoryData.currentdata.id)
                 editCategory(resdata).then(res => {
                     if (res.data.resCode === 0) {
                         root.$message({
@@ -221,23 +221,12 @@
                             type: 'success'
                         })
                     }
-                  categoryData.item.map((item,idx)=>{
-                    console.log(resdata.id)
-                    console.log(item)
-                    if(item.id==resdata.id){
-                      categoryData.item[idx].category_name=res.data.data.categoryName
-                      console.log(999)
-                    }
-                  })
-                    // categoryData.currentdata.category_name=res.data.data.categoryName
-                  //   let data = categoryData.item.filter(item => item.id == resdata.id)
-                  // data[0].category_name=res.data.data.categoryName
-                  //   console.log(data)
+                    currentdata.category_name = res.data.data.data.categoryName
+                    formLabelAlign.categoryName = ''
+                    currentdata = {}
                 }).catch(err => {
                     console.log(err)
                 })
-                formLabelAlign.categoryName = ''
-                categoryData.currentdata = {}
             }
             /**
              * 生命周期
