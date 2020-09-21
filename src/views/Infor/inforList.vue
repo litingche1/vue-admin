@@ -4,7 +4,7 @@
     <el-row :gutter="14" class="inforList-warp-header">
       <el-col :span="4">
         <div class="label-warp category">
-          <label for>类别&nbsp;&nbsp;:</label>
+          <label for>分类&nbsp;&nbsp;:</label>
           <div class="warp-content">
             <el-select
               v-model="categoryvalue"
@@ -12,10 +12,10 @@
               style="width:100%"
             >
               <el-option
-                v-for="item in options"
-                :key="item.value"
-                :label="item.label"
-                :value="item.value"
+                v-for="item in options.item"
+                :key="item.id"
+                :label="item.category_name"
+                :value="item.id"
               ></el-option>
             </el-select>
           </div>
@@ -119,8 +119,9 @@
 
 <script>
 import Dialogs from './dialog/index'
-import { ref, reactive, watchEffect } from '@vue/composition-api'
+import { ref, reactive, watchEffect,onMounted } from '@vue/composition-api'
 import { global } from '@/utils/globla.js'
+import {getInforCategory} from "@/utils/common";
 export default {
   name: 'inforList',
   components: {
@@ -129,6 +130,7 @@ export default {
   setup(props) {
     console.log(props)
     const { str: zfc, confirm: confirmed } = global()
+    const {categoryItem,getCategoryData} = getInforCategory()
     watchEffect(() => {
       console.log(zfc.value)
     })
@@ -137,20 +139,22 @@ export default {
     const datevalue = ref('') //日期框选中的值
     const input = ref('')
     const dialogShow = ref(false) //日期框选中的值
-    const options = reactive([
-      {
+    const options = reactive({
+      item:[ {
         value: '选项1',
         label: '国际信息'
       },
-      {
-        value: '选项2',
-        label: '国内信息'
-      },
-      {
-        value: '选项3',
-        label: '行业信息'
-      }
-    ])
+        {
+          value: '选项2',
+          label: '国内信息'
+        },
+        {
+          value: '选项3',
+          label: '行业信息'
+        }]
+    }
+
+    )
     const keywordoptions = reactive([
       {
         value: '选项1',
@@ -221,6 +225,16 @@ export default {
     const confirms = val =>{
        console.log(val)
     }
+    /*
+    * 生命周期函数
+    * */
+    onMounted(()=>{
+      getCategoryData()
+    })
+    //获取分类列表
+    watchEffect(()=>{
+      options.item=categoryItem.item
+    })
     return {
       categoryvalue,
       keywordvalue,

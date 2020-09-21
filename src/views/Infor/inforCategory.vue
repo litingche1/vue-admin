@@ -71,15 +71,18 @@
 </template>
 
 <script>
-    import {reactive, ref, onMounted} from '@vue/composition-api'
-    import {AddFristCategory, getCategory, deleteCategory, editCategory} from '@/api/news'
+    import {reactive, ref, onMounted, watchEffect} from '@vue/composition-api'
+    import {AddFristCategory, deleteCategory, editCategory} from '@/api/news'
     import {global} from "@/utils/globla";
+    import {getInforCategory} from "@/utils/common";
 
     export default {
         name: 'inforCategory',
         setup(props, {root}) {
             console.log(props)
             const {confirm} = global()
+            const {categoryItem,getCategoryData} = getInforCategory()
+            console.log(categoryItem)
             const formLabelAlign = reactive({
                 categoryName: '',
                 secondaryCategoryName: ''
@@ -145,18 +148,6 @@
                         button_loading.value = false
                         formLabelAlign.categoryName = ''
                         formLabelAlign.secondaryCategoryName = ''
-                        console.log(err)
-                    })
-            }
-            //获取分类列表
-            const getCategorys = () => {
-                getCategory({})
-                    .then(res => {
-                        if (res.data.resCode === 0) {
-                            categoryData.item = res.data.data.data
-                        }
-                    })
-                    .catch(err => {
                         console.log(err)
                     })
             }
@@ -232,9 +223,19 @@
              * 生命周期
              */
             onMounted(() => {
-                getCategorys()
+                getCategoryData()
             })
-            // console.log(onMounted())
+            //获取分类列表
+            watchEffect(()=>{
+                categoryData.item=categoryItem.item
+            })
+        //     watch(() => categoryItem.item, value => {
+        //             console.log(value)
+        //             categoryData.item = value
+        //         }
+        //
+        //
+        // )
             return {
                 formLabelAlign,
                 submit,
