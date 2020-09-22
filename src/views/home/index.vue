@@ -7,21 +7,23 @@
 </template>
 
 <script>
-  import { ref, reactive, onBeforeUpdate } from '@vue/composition-api'
+  import { ref, reactive ,onMounted,onBeforeUpdate } from '@vue/composition-api'
 export default {
   name:'home',
-  setup(){
+  setup(props, { refs}){
+    console.log(props)
+
     const list = reactive([1, 2, 3])
     const divs = ref([])
 
     // 确保在每次变更之前重置引用
     onBeforeUpdate(() => {
-      console.log(divs)
+      // console.log(divs)
       // divs.value = []
     })
-    // onMounted(()=>{
-    //   console.log(divs[1])
-    // })
+    onMounted(()=>{
+      console.log(Object.values(refs)[0][0].innerText)
+    })
 
     return {
       list,
