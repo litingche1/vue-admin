@@ -2,7 +2,13 @@ import request from '@/utils/request'
 /**
  * 列表
  */
-
+export function getInfor(data) {
+    return request({
+        method: 'post',
+        url: "/news/getList/",
+        data,
+    })
+}
 
 
 
@@ -10,7 +16,13 @@ import request from '@/utils/request'
 /**
  * 新增
  */
-
+export function AddInfor(data) {
+    return request({
+        method: 'post',
+        url: "/news/add/",
+        data,
+    })
+}
 
 
 

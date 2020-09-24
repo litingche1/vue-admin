@@ -113,7 +113,7 @@
         ></el-pagination>
       </el-col>
     </el-row>
-    <Dialogs :showlog.sync="dialogShow" />
+    <Dialogs :showlog.sync="dialogShow" :catergory="options.item"/>
   </div>
 </template>
 
@@ -139,6 +139,7 @@ export default {
     const datevalue = ref('') //日期框选中的值
     const input = ref('')
     const dialogShow = ref(false) //日期框选中的值
+    // let catergoryData = reactive([])
     const options = reactive({
       item:[ {
         value: '选项1',
@@ -234,6 +235,8 @@ export default {
     //获取分类列表
     watchEffect(()=>{
       options.item=categoryItem.item
+      // catergoryData=categoryItem.item
+      // console.log(catergoryData)
     })
     return {
       categoryvalue,
@@ -244,6 +247,7 @@ export default {
       options,
       keywordoptions,
       tableData,
+      // catergoryData,
       handleSizeChange,
       handleCurrentChange,
       showtck,
