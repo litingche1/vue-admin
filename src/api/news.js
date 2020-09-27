@@ -37,7 +37,13 @@ export function AddInfor(data) {
 /**
  * 删除
  */
-
+export function DeleteInfo(data) {
+    return request({
+        method: 'post',
+        url: "/news/deleteInfo/",
+        data,
+    })
+}
 
 
 

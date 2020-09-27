@@ -29,6 +29,8 @@
                                 v-model="datevalue"
                                 style="width:100%"
                                 type="datetimerange"
+                                format="yyyy-MM-dd"
+                                value-format="yyyy-MM-dd"
                                 range-separator="至"
                                 start-placeholder="开始日期"
                                 end-placeholder="结束日期"
@@ -63,7 +65,7 @@
                 ></el-input>
             </el-col>
             <el-col :span="2">
-                <el-button type="danger" style="width:100%">搜索</el-button>
+                <el-button type="danger" @click="search()" style="width:100%">搜索</el-button>
             </el-col>
             <el-col :span="2">
                 <div class="div-box"></div>
@@ -80,15 +82,16 @@
             </el-col>
         </el-row>
         <!-- 内容 -->
-        <el-table :data="tableData.item" border style="width: 100%">
+        <el-table :data="tableData.item" border v-loading="loadingData" @selection-change="handleSelectionChange"
+                  style="width: 100%">
             <el-table-column type="selection" width="45"></el-table-column>
             <el-table-column prop="title" label="标题" width="830"></el-table-column>
-            <el-table-column prop="categoryId" label="类型" width="130"></el-table-column>
-            <el-table-column prop="createDate" label="日期" width="237"></el-table-column>
+            <el-table-column prop="categoryId" label="类型" :formatter="categoryConversion" width="130"></el-table-column>
+            <el-table-column prop="createDate" label="日期" :formatter="timeConversion" width="237"></el-table-column>
             <el-table-column prop="user" label="管理员" width="115"></el-table-column>
             <el-table-column label="操作">
-                <template>
-                    <el-button size="mini" type="danger" @click="deleteItem()"
+                <template slot-scope="scope">
+                    <el-button size="mini" type="danger" @click="deleteItem(scope.row.id)"
                     >删除
                     </el-button
                     >
@@ -123,9 +126,9 @@
 <script>
     import Dialogs from './dialog/index'
     import {ref, reactive, watchEffect, onMounted} from '@vue/composition-api'
-    import {getInfor} from '@/api/news'
+    import {getInfor, DeleteInfo} from '@/api/news'
     import {global} from '@/utils/globla.js'
-    import {getInforCategory} from "@/utils/common";
+    import {getInforCategory, timestampToTime} from "@/utils/common";
 
     export default {
         name: 'inforList',
@@ -145,6 +148,8 @@
             const input = ref('')
             const dialogShow = ref(false) //日期框选中的值
             let totalData = ref(0)
+            let loadingData = ref(false)
+            let itemId = ref('')
             const options = reactive({
                     item: [{
                         value: '选项1',
@@ -162,32 +167,29 @@
             )
             const keywordoptions = reactive([
                 {
-                    value: '选项1',
+                    value: 'id',
                     label: 'ID'
                 },
                 {
-                    value: '选项2',
+                    value: 'title',
                     label: '标题'
                 }
             ])
             let tableData = reactive({
-              item:[
-
-              ]
-            }
-
-              )
-          const pageData=reactive({
-            pageNumber:1,
-            pageSize:10
-          })
+                    item: []
+                }
+            )
+            const pageData = reactive({
+                pageNumber: 1,
+                pageSize: 10
+            })
             const handleSizeChange = val => {
-              pageData.pageSize=val
-              GetInfor()
+                pageData.pageSize = val
+                GetInfor()
             }
             const handleCurrentChange = val => {
-              pageData.pageNumber=val
-              GetInfor()
+                pageData.pageNumber = val
+                GetInfor()
                 console.log(`每页 ${val} 条`)
             }
             //新增
@@ -195,11 +197,13 @@
                 dialogShow.value = true
             }
             //表格删除按钮
-            const deleteItem = () => {
+            const deleteItem = (id) => {
+                itemId.value = [id]
                 confirmed({
                     content: '此操作将永久删除该文件, 是否继续?',
                     id: 42222,
-                    tip: '警告'
+                    tip: '警告',
+                    fn: confirms,
                 })
             }
             //表格编辑
@@ -215,10 +219,22 @@
                     fn: confirms,
                 })
             }
-            const confirms = val => {
-                console.log(val)
+            //表格删除的多选
+            const handleSelectionChange = val => {
+                itemId.value = val.map(item => item.id)
+            }
+            const confirms = () => {
+                DeleteInfo({id: itemId.value}).then(res => {
+                    console.log(res)
+                    GetInfor()
+                    itemId.value = ''
+                }).catch(err => {
+                    console.log(err)
+                    itemId.value = ''
+                })
             }
             const GetInfor = () => {
+                loadingData.value = true
                 let params = {
                     categoryId: '',
                     startTiem: '',
@@ -229,13 +245,29 @@
                     pageSize: pageData.pageSize
                 }
                 getInfor(params).then(res => {
-                  tableData.item=res.data.data.data
-                  console.log(tableData)
-                  totalData.value=res.data.data.total
+                    tableData.item = res.data.data.data
+                    loadingData.value = false
+                    console.log(tableData)
+                    totalData.value = res.data.data.total
+                    loadingData.value = false
                     console.log(res.data.data.data)
                 }).catch(err => {
                     console.log(err)
                 })
+            }
+            const search = () => {
+                console.log(datevalue.value)
+                console.log(keywordvalue.value)
+                console.log(input.value)
+                console.log(categoryvalue.value)
+            }
+            const timeConversion = row => {
+                return timestampToTime(row.createDate)
+            }
+            const categoryConversion = row=>{
+              let data=options.item.filter(item=>item.id===row.categoryId)
+              return data[0].category_name
+              // console.log(row,data)
             }
             /*
             * 生命周期函数
@@ -259,13 +291,18 @@
                 options,
                 keywordoptions,
                 tableData,
-              totalData,
+                totalData,
+                loadingData,
                 // catergoryData,
                 handleSizeChange,
                 handleCurrentChange,
                 showtck,
                 deleteItem,
+                handleSelectionChange,
                 editItem,
+                search,
+                timeConversion,
+              categoryConversion,
                 deleteAll
             }
         }
