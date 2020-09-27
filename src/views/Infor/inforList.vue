@@ -233,17 +233,25 @@
                     itemId.value = ''
                 })
             }
-            const GetInfor = () => {
+            const GetInfor = (data) => {
                 loadingData.value = true
-                let params = {
-                    categoryId: '',
-                    startTiem: '',
-                    endTime: '',
-                    title: '',
-                    id: '',
-                    pageNumber: pageData.pageNumber,
-                    pageSize: pageData.pageSize
+                let params= {}
+                if (data) {
+                    params = data
+                } else {
+                    params = getInforParams()
+                    params.pageNumber = pageData.pageNumber
+                    params.pageSize = pageData.pageSize
                 }
+                // let params = {
+                //     categoryId: '',
+                //     startTiem: '',
+                //     endTime: '',
+                //     title: '',
+                //     id: '',
+                //     pageNumber: pageData.pageNumber,
+                //     pageSize: pageData.pageSize
+                // }
                 getInfor(params).then(res => {
                     tableData.item = res.data.data.data
                     loadingData.value = false
@@ -255,19 +263,33 @@
                     console.log(err)
                 })
             }
+            const getInforParams = () => {
+                let requestData = {}
+                if (categoryvalue.value) {
+                    requestData.categoryId = categoryvalue.value
+                }
+                if (datevalue.value.length > 1) {
+                    requestData.startTiem = datevalue.value[0]
+                    requestData.endTime = datevalue.value[1]
+                }
+                if (input.value) {
+                    requestData[keywordvalue.value] = input.value
+                }
+                requestData.pageNumber = 1
+                requestData.pageSize = 10
+                return requestData
+            }
             const search = () => {
-                console.log(datevalue.value)
-                console.log(keywordvalue.value)
-                console.log(input.value)
-                console.log(categoryvalue.value)
+                let data = getInforParams()
+                GetInfor(data)
             }
             const timeConversion = row => {
                 return timestampToTime(row.createDate)
             }
-            const categoryConversion = row=>{
-              let data=options.item.filter(item=>item.id===row.categoryId)
-              return data[0].category_name
-              // console.log(row,data)
+            const categoryConversion = row => {
+                let data = options.item.filter(item => item.id === row.categoryId)
+                return data[0].category_name
+                // console.log(row,data)
             }
             /*
             * 生命周期函数
@@ -302,7 +324,7 @@
                 editItem,
                 search,
                 timeConversion,
-              categoryConversion,
+                categoryConversion,
                 deleteAll
             }
         }
