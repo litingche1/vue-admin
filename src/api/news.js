@@ -16,10 +16,10 @@ export function getInfor(data) {
 /**
  * 新增
  */
-export function AddInfor(data) {
+export function EditInfo(data) {
     return request({
         method: 'post',
-        url: "/news/add/",
+        url: "/news/editInfo/",
         data,
     })
 }
@@ -30,7 +30,13 @@ export function AddInfor(data) {
 /**
  * 编辑
  */
-
+export function AddInfor(data) {
+    return request({
+        method: 'post',
+        url: "/news/add/",
+        data,
+    })
+}
 
 
 
@@ -57,7 +63,16 @@ export function AddFristCategory(data) {
         data,
     })
 }
-
+/**
+* 信息分类添加二级
+*/
+export function AddTwoCategory(data) {
+    return request({
+        method: 'post',
+        url: "/news/addChildrenCategory/",
+        data,
+    })
+}
 
 /**
  * 获取信息分类
@@ -69,7 +84,16 @@ export function getCategory(data) {
         data,
     })
 }
-
+/**
+ * 获取信息分类(有子级分类)
+ */
+export function getCategoryAll(data) {
+    return request({
+        method: 'post',
+        url: "/news/getCategoryAll/",
+        data,
+    })
+}
 /**
  * 删除一级分类
  */

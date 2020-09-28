@@ -1,6 +1,6 @@
 <template>
     <el-dialog
-            title="新增"
+            title="修改"
             :visible.sync="showdialog"
             @close="closedshow"
             width="580px"
@@ -40,7 +40,7 @@
 
 <script>
     import {ref, reactive, watchEffect} from '@vue/composition-api'
-    import {AddInfor} from '@/api/news'
+    import {EditInfo} from '@/api/news'
 
     export default {
         name: 'dialogs',
@@ -50,12 +50,15 @@
             },
             catergory: {
                 type: Array
+            },
+            dataItem: {
+                type: Object
             }
         },
-        setup(props, {root,emit}) {
+        setup(props, {root, emit}) {
             const showdialog = ref(false)
             const ruleForm = ref(null)
-            const button_status=ref(false)
+            const button_status = ref(false)
             const formLabelWidth = ref('70px')
             let forms = reactive({
                 name: '',
@@ -72,68 +75,69 @@
             })
             watchEffect(() => {
                 showdialog.value = props.showlog
+                // console.log(props)
             })
             const closedshow = () => {
                 showdialog.value = false
                 emit('update:showlog', false)
             }
+            //弹出框打开的时候执行该函数
             const opentck = () => {
-                console.log(props.catergory)
+                const data = props.dataItem.item
                 options.item = props.catergory
+                forms.name = data.title
+                forms.resource = data.content
+                const categoryName = options.item.filter(item => item.id === data.categoryId)
+                forms.region = categoryName[0].category_name
             }
-            const addInfors = () => {
+            const editInfo = () => {
                 let params = {
-                    categoryId: forms.region,
+                    id: props.dataItem.item.id,
+                    categoryId: props.dataItem.item.categoryId,
                     title: forms.name,
                     imgUrl: '',
-                    createDate: '',
-                    status: '',
+                    updateDate: '',
                     content: forms.resource,
                 }
-                AddInfor(params).then(res => {
-                    button_status.value=false
-                  if(res.data.resCode===0){
-                    root.$message({
-                      message: res.data.message,
-                      type: 'success'
-                    })
-                      emit('updatelist')
-                  }
-                }).catch(err=>{
-                    button_status.value=false
-                  console.log(err)
+                EditInfo(params).then(res => {
+                    button_status.value = false
+                    if (res.data.resCode === 0) {
+                        root.$message({
+                            message: res.data.message,
+                            type: 'success'
+                        })
+                        emit('updatelist')
+                    }
+                }).catch(err => {
+                    button_status.value = false
+                    console.log(err)
                 })
             }
-            const resetFields =()=>{
-                forms.name=''
-                forms.region=''
-                forms.resource=''
-            }
             const submit = () => {
-                if(!forms.region){
+                if (!forms.region) {
                     root.$message({
                         message: '类型不能为空',
                         type: 'error'
                     })
                     return false
                 }
-                if(!forms.name){
+                if (!forms.name) {
                     root.$message({
                         message: '标题不能为空',
                         type: 'error'
                     })
                     return false
                 }
-                if(!forms.resource){
+                if (!forms.resource) {
                     root.$message({
                         message: '概况不能为空',
                         type: 'error'
                     })
                     return false
                 }
-                button_status.value=true
-                addInfors()
-                resetFields()
+                button_status.value = true
+                editInfo()
+                // resetFields()
                 closedshow()
 
             }

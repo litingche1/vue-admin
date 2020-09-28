@@ -20,7 +20,7 @@
                                     <el-button size="mini" type="danger" round
                                                v-on:click="editCategoryItem({data:items,type:'editFirstCategory'})">编辑
                                     </el-button>
-                                    <el-button size="mini" type="success" round
+                                    <el-button size="mini" type="success" round @click="addTwoChild({data:items,type:'addTwoChild'})"
                                     >添加子级
                                     </el-button
                                     >
@@ -72,7 +72,7 @@
 
 <script>
     import {reactive, ref, onMounted, watchEffect} from '@vue/composition-api'
-    import {AddFristCategory, deleteCategory, editCategory} from '@/api/news'
+    import {AddFristCategory, deleteCategory, editCategory, AddTwoCategory} from '@/api/news'
     import {global} from "@/utils/globla";
     import {getInforCategory} from "@/utils/common";
 
@@ -81,7 +81,8 @@
         setup(props, {root}) {
             console.log(props)
             const {confirm} = global()
-            const {categoryItem,getCategoryData} = getInforCategory()
+            const {categoryItem, getCategoryData,getCategoryDataAll} = getInforCategory()
+            console.log(getCategoryData)
             console.log(categoryItem)
             const formLabelAlign = reactive({
                 categoryName: '',
@@ -101,11 +102,14 @@
             const secondaryCategoryName_disabled = ref(true)
             const deleteItemId = ref('')
             const button_status = ref('')
+            let itemId=ref('')
             const submit = () => {
                 if (button_status.value === 'addFirstCategory') {
                     addFristCategorys()
                 } else if (button_status.value === 'editFirstCategory') {
                     editFirstCategory()
+                }else if(button_status.value === 'addTwoChild'){
+                    addTwoCategory()
                 }
             }
             //添加一级分类修改的一些变量状态
@@ -219,23 +223,53 @@
                     console.log(err)
                 })
             }
+            //添加二级分类
+            const addTwoChild = (val) => {
+                let data=val.data
+                categoryName.value = true
+                secondaryCategoryName.value = true
+                button_disabled.value = false
+                categoryName_disabled.value = true
+                secondaryCategoryName_disabled.value = false
+                formLabelAlign.categoryName = data.category_name
+                button_status.value = val.type
+                itemId=data.id
+            }
+            const addTwoCategory = () =>{
+                let params = {
+                    categoryName:formLabelAlign.secondaryCategoryName,
+                    parentId:itemId,
+                }
+                // console.log(data)
+                AddTwoCategory(params).then(res => {
+                    if (res.data.resCode === 0) {
+                        root.$message({
+                            message: res.data.message,
+                            type: 'success'
+                        })
+                    }
+                    getCategoryDataAll()
+                }).catch(err => {
+                    console.log(err)
+                })
+            }
             /**
              * 生命周期
              */
             onMounted(() => {
-                getCategoryData()
+                getCategoryDataAll()
             })
             //获取分类列表
-            watchEffect(()=>{
-                categoryData.item=categoryItem.item
+            watchEffect(() => {
+                categoryData.item = categoryItem.item
             })
-        //     watch(() => categoryItem.item, value => {
-        //             console.log(value)
-        //             categoryData.item = value
-        //         }
-        //
-        //
-        // )
+            //     watch(() => categoryItem.item, value => {
+            //             console.log(value)
+            //             categoryData.item = value
+            //         }
+            //
+            //
+            // )
             return {
                 formLabelAlign,
                 submit,
@@ -249,7 +283,8 @@
                 button_loading,
                 button_disabled,
                 categoryName_disabled,
-                secondaryCategoryName_disabled
+                secondaryCategoryName_disabled,
+                addTwoChild
             }
         }
     }

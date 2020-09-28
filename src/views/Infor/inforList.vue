@@ -95,7 +95,7 @@
                     >删除
                     </el-button
                     >
-                    <el-button size="mini" type="success" @click="editItem()"
+                    <el-button size="mini" type="success" @click="editItem(scope.row)"
                     >编辑
                     </el-button
                     >
@@ -119,12 +119,15 @@
                 ></el-pagination>
             </el-col>
         </el-row>
-        <Dialogs :showlog.sync="dialogShow" :catergory="options.item"/>
+        <Dialogs :showlog.sync="dialogShow" :catergory="options.item" @updatelist="updateTableList"/>
+        <EditDialogs :showlog.sync="editdialogShow" :catergory="options.item" :dataItem="editData"
+                     @updatelist="updateTableList"/>
     </div>
 </template>
 
 <script>
     import Dialogs from './dialog/index'
+    import EditDialogs from './dialog/edit'
     import {ref, reactive, watchEffect, onMounted} from '@vue/composition-api'
     import {getInfor, DeleteInfo} from '@/api/news'
     import {global} from '@/utils/globla.js'
@@ -133,9 +136,10 @@
     export default {
         name: 'inforList',
         components: {
-            Dialogs
+            Dialogs,
+            EditDialogs,
         },
-        setup(props) {
+        setup(props, {root}) {
             console.log(props)
             const {str: zfc, confirm: confirmed} = global()
             const {categoryItem, getCategoryData} = getInforCategory()
@@ -146,8 +150,12 @@
             const keywordvalue = ref('') //关键字选中的值
             const datevalue = ref('') //日期框选中的值
             const input = ref('')
-            const dialogShow = ref(false) //日期框选中的值
+            const dialogShow = ref(false) //新增弹框的状态
+            const editdialogShow = ref(false) //表格内编辑弹框的状态
             let totalData = ref(0)
+            let editData = reactive({
+                item: {}
+            })
             let loadingData = ref(false)
             let itemId = ref('')
             const options = reactive({
@@ -207,11 +215,20 @@
                 })
             }
             //表格编辑
-            const editItem = () => {
-                dialogShow.value = true
+            const editItem = (row) => {
+                editdialogShow.value = true
+                editData.item = row
+                console.log(editData)
             }
             //批量删除
             const deleteAll = () => {
+                if (itemId.value.length < 1) {
+                    root.$message({
+                        message: '请选择想要删除的文件',
+                        type: 'error'
+                    })
+                    return false
+                }
                 confirmed({
                     content: '此操作将永久删除所选择的文件, 是否继续?',
                     id: 42222,
@@ -235,7 +252,7 @@
             }
             const GetInfor = (data) => {
                 loadingData.value = true
-                let params= {}
+                let params = {}
                 if (data) {
                     params = data
                 } else {
@@ -243,22 +260,11 @@
                     params.pageNumber = pageData.pageNumber
                     params.pageSize = pageData.pageSize
                 }
-                // let params = {
-                //     categoryId: '',
-                //     startTiem: '',
-                //     endTime: '',
-                //     title: '',
-                //     id: '',
-                //     pageNumber: pageData.pageNumber,
-                //     pageSize: pageData.pageSize
-                // }
                 getInfor(params).then(res => {
                     tableData.item = res.data.data.data
                     loadingData.value = false
-                    console.log(tableData)
                     totalData.value = res.data.data.total
                     loadingData.value = false
-                    console.log(res.data.data.data)
                 }).catch(err => {
                     console.log(err)
                 })
@@ -291,6 +297,11 @@
                 return data[0].category_name
                 // console.log(row,data)
             }
+            //修改表格数据会刷新数据
+            const updateTableList = () => {
+                // window.location.reload();
+                GetInfor()
+            }
             /*
             * 生命周期函数
             * */
@@ -310,11 +321,13 @@
                 datevalue,
                 input,
                 dialogShow,
+                editdialogShow,
                 options,
                 keywordoptions,
                 tableData,
                 totalData,
                 loadingData,
+                editData,
                 // catergoryData,
                 handleSizeChange,
                 handleCurrentChange,
@@ -325,7 +338,8 @@
                 search,
                 timeConversion,
                 categoryConversion,
-                deleteAll
+                deleteAll,
+                updateTableList
             }
         }
     }

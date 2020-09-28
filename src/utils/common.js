@@ -1,5 +1,5 @@
 import { reactive } from '@vue/composition-api'
-import {getCategory} from '@/api/news'
+import {getCategory,getCategoryAll} from '@/api/news'
 export function getInforCategory() {
     const categoryItem = reactive({
         item:[]
@@ -11,9 +11,17 @@ export function getInforCategory() {
             console.log(err)
         })
     }
+    const getCategoryDataAll = () => {
+        getCategoryAll({}).then(res=>{
+            categoryItem.item=res.data.data
+        }).catch(err=>{
+            console.log(err)
+        })
+    }
     return {
         categoryItem,
-        getCategoryData
+        getCategoryData,
+        getCategoryDataAll
     }
 }
 export function timestampToTime(timestamp) {
