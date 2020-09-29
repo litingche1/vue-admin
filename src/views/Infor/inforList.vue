@@ -97,8 +97,7 @@
                     >
                     <el-button size="mini" type="success" @click="editItem(scope.row)"
                     >编辑
-                    </el-button >
-<!--                    <router-link-->
+                    </el-button>
                     <el-button size="mini" type="success" @click="editItemDetails(scope.row)"
                     >编辑详情
                     </el-button>
@@ -131,7 +130,7 @@
 <script>
     import Dialogs from './dialog/index'
     import EditDialogs from './dialog/edit'
-    import {ref, reactive, watchEffect, onMounted} from '@vue/composition-api'
+    import {ref, reactive, watchEffect, onMounted,computed} from '@vue/composition-api'
     import {getInfor, DeleteInfo} from '@/api/news'
     import {global} from '@/utils/globla.js'
     import {getInforCategory, timestampToTime} from "@/utils/common";
@@ -223,6 +222,28 @@
                 editData.item = row
                 console.log(editData)
             }
+            const editItemDetails = data => {
+                root.$router.push({
+                    path: `/details`,
+                    params: {id: data.id, title: data.title}
+                })
+                console.log(data.id, data.title)
+                root.$store.commit('inforList/SET_ITEMDATA', {
+                    id: {
+                        value: data.id,
+                        session: true,
+                        name: 'inForItemId',
+                    },
+                    title: {
+                        value: data.title,
+                        session: true,
+                        name: 'inForItemTitle',
+                    }
+                })
+                const collapse = computed(() => root.$store.state.inforList.id)
+                console.log(collapse)
+            }
+            // com
             //批量删除
             const deleteAll = () => {
                 if (itemId.value.length < 1) {
@@ -342,6 +363,7 @@
                 timeConversion,
                 categoryConversion,
                 deleteAll,
+                editItemDetails,
                 updateTableList
             }
         }

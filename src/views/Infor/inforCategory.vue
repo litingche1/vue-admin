@@ -35,7 +35,7 @@
                                     {{ childrenitem.category_name }}
                                     <div class="button-group">
                                         <el-button size="mini" type="danger" round>编辑</el-button>
-                                        <el-button size="mini" round>编辑</el-button>
+                                        <el-button size="mini" round>删除</el-button>
                                     </div>
                                 </li>
                             </ul>
