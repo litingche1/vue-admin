@@ -19,12 +19,14 @@
             <!-- <i class="el-icon-location"></i> -->
             <span>{{ item.meta.name }}</span>
           </template>
-          <el-menu-item
-            v-for="(submenuItem, idx2) in item.children"
-            :key="idx2"
-            :index="submenuItem.path"
+          <template v-for="(submenuItem, idx2) in item.children" >
+            <el-menu-item
+                    v-if="!submenuItem.hidden"
+                    :key="idx2"
+                    :index="submenuItem.path"
             >{{ submenuItem.meta.name }}</el-menu-item
-          >
+            >
+          </template>
         </el-submenu>
       </template>
     </el-menu>

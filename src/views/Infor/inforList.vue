@@ -85,11 +85,11 @@
         <el-table :data="tableData.item" border v-loading="loadingData" @selection-change="handleSelectionChange"
                   style="width: 100%">
             <el-table-column type="selection" width="45"></el-table-column>
-            <el-table-column prop="title" label="标题" width="830"></el-table-column>
+            <el-table-column prop="title" label="标题"></el-table-column>
             <el-table-column prop="categoryId" label="类型" :formatter="categoryConversion" width="130"></el-table-column>
             <el-table-column prop="createDate" label="日期" :formatter="timeConversion" width="237"></el-table-column>
             <el-table-column prop="user" label="管理员" width="115"></el-table-column>
-            <el-table-column label="操作">
+            <el-table-column label="操作" width="237">
                 <template slot-scope="scope">
                     <el-button size="mini" type="danger" @click="deleteItem(scope.row.id)"
                     >删除
@@ -97,8 +97,11 @@
                     >
                     <el-button size="mini" type="success" @click="editItem(scope.row)"
                     >编辑
-                    </el-button
-                    >
+                    </el-button >
+<!--                    <router-link-->
+                    <el-button size="mini" type="success" @click="editItemDetails(scope.row)"
+                    >编辑详情
+                    </el-button>
                 </template>
             </el-table-column>
         </el-table>

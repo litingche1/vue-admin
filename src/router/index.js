@@ -71,6 +71,16 @@ const routes = [
           name:'信息列表'
         }
       },
+      {
+        path: '/details',
+        name: 'details',
+        hidden:true,
+        component: () => import('../views/Infor/details.vue'),
+        meta:{
+          name:'信息列表详情',
+
+        }
+      },
     ]
   },
   //用户管理
