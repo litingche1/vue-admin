@@ -2,7 +2,7 @@
     <el-form ref="form" :model="form" label-width="120px">
         <el-form-item label="信息分类：">
             <el-select v-model="form.categoryId" placeholder="请选择活动区域">
-                <el-option v-for="(item,idx) in data.categoryList" :label="item.category_name" :value="item.category_name"
+                <el-option v-for="(item,idx) in data.categoryList" :label="item.category_name" :value="item.id"
                            :key="idx"></el-option>
             </el-select>
         </el-form-item>
@@ -31,7 +31,7 @@
 </template>
 
 <script>
-    import {reactive, onMounted} from '@vue/composition-api'
+    import {reactive, onMounted, watchEffect} from '@vue/composition-api'
     import {EditInfo, getInfor} from '@/api/news'
     import {getInforCategory, timestampToTime} from "@/utils/common";
     import {quillEditor} from "vue-quill-editor";
@@ -52,8 +52,7 @@
                 button_status: false,
                 editorOption: {}
             })
-            // data.categoryList = getInforCategory().getCategoryData()
-            console.log(getInforCategory())
+            const {categoryItem, getCategoryData} = getInforCategory()
             const form = reactive({
                 categoryId: '',
                 title: '',
@@ -61,12 +60,12 @@
                 imgUrl: '',
                 content: ''
             })
-            console.log(data.id)
+            //保存编辑的内容
             const editInfo = () => {
                 data.button_status = true
                 let params = {
                     id: data.id,
-                    categoryId:form.categoryId,
+                    categoryId: form.categoryId,
                     title: form.title,
                     imgUrl: '',
                     updateDate: '',
@@ -85,6 +84,7 @@
                     console.log(err)
                 })
             }
+            //获取改条信息的详情内容
             const GetInfor = () => {
                 let requestData = {
                     pageNumber: 1,
@@ -93,7 +93,6 @@
                 }
                 getInfor(requestData).then(response => {
                     let responseData = response.data.data.data[0]
-                    console.log(responseData)
                     form.categoryId = responseData.categoryId;
                     form.title = responseData.title;
                     form.createDate = timestampToTime(responseData.createDate);
@@ -107,7 +106,11 @@
             const onSubmit = () => {
                 editInfo()
             }
+            watchEffect(() => {
+                data.categoryList = categoryItem.item
+            })
             onMounted(() => {
+                getCategoryData()
                 GetInfor()
 
             })
