@@ -1,5 +1,6 @@
 import { reactive } from '@vue/composition-api'
 import {getCategory,getCategoryAll} from '@/api/news'
+import request from '@/utils/request'
 export function getInforCategory() {
     const categoryItem = reactive({
         item:[]
@@ -33,4 +34,11 @@ export function timestampToTime(timestamp) {
     let m = date.getMinutes() + ':';
     let s = date.getSeconds();
     return Y+M+D+h+m+s;
+}
+export function  Qiniutoken(data){
+    return request({
+        method: 'post',
+        url: "/uploadImgToken/",
+        data,
+    })
 }
