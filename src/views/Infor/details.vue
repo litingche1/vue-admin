@@ -10,16 +10,7 @@
             <el-input v-model="form.title"></el-input>
         </el-form-item>
         <el-form-item label="缩略图：">
-            <el-upload
-                    class="avatar-uploader"
-                    action="http://up-z2.qiniup.com"
-                    :data="data.uploaadKey"
-                    :show-file-list="false"
-                    :on-success="handleAvatarSuccess"
-                    :before-upload="beforeAvatarUpload">
-                <img v-if="form.imageUrl" :src="form.imageUrl" class="avatar">
-                <i v-else class="el-icon-plus avatar-uploader-icon"></i>
-            </el-upload>
+            <ImgUpload :imageUrl.sync="form.imageUrl" :confing="ImgUploadConfig"></ImgUpload>
         </el-form-item>
         <el-form-item label="发布时间：">
             <el-date-picker
@@ -42,8 +33,9 @@
 <script>
     import {reactive, onMounted, watchEffect} from '@vue/composition-api'
     import {EditInfo, getInfor} from '@/api/news'
-    import {getInforCategory, timestampToTime, Qiniutoken} from "@/utils/common";
+    import {getInforCategory, timestampToTime} from "@/utils/common";
     import {quillEditor} from "vue-quill-editor";
+    import ImgUpload from "@c/ImgUpload";
     import 'quill/dist/quill.core.css';
     import 'quill/dist/quill.snow.css';
     import 'quill/dist/quill.bubble.css';
@@ -52,6 +44,7 @@
         name: 'Itemdetails',
         components: {
             quillEditor,
+            ImgUpload,
         },
         setup(props, {root}) {
             console.log(props)
@@ -60,10 +53,6 @@
                 categoryList: [],
                 button_status: false,
                 editorOption: {},
-                uploaadKey: {
-                    token: '',
-                    key: ''
-                }
             })
             const {categoryItem, getCategoryData} = getInforCategory()
             const form = reactive({
@@ -74,6 +63,12 @@
                 content: '',
                 imageUrl: ''
             })
+            const ImgUploadConfig = reactive({
+                action: 'http://up-z2.qiniup.com',
+                accesskey: 'gKSspSs6S6ZtVbEJ6phllzZ_iDgAlKUHhuy7wKCW',
+                secretkey: 'snQe1ZFy3WXe0zXwLpWgc4PY4Es0080yXG_9HO0N',
+                buckety: 'litingchen--vue3',
+            })
             //保存编辑的内容
             const editInfo = () => {
                 data.button_status = true
@@ -81,7 +76,7 @@
                     id: data.id,
                     categoryId: form.categoryId,
                     title: form.title,
-                    imgUrl:form.imageUrl,
+                    imgUrl: form.imageUrl,
                     updateDate: '',
                     content: form.content,
                 }
@@ -104,7 +99,7 @@
                     pageNumber: 1,
                     pageSize: 1,
                     id: data.id,
-                    imgUrl:form.imageUrl
+                    imgUrl: form.imageUrl
                 }
                 getInfor(requestData).then(response => {
                     let responseData = response.data.data.data[0]
@@ -121,40 +116,7 @@
             const onSubmit = () => {
                 editInfo()
             }
-            //图片上传成功
-            const handleAvatarSuccess = (res, file) => {
-                console.log(file.raw)
-                console.log(res)
-                form.imageUrl = URL.createObjectURL(file.raw);
-            }
-            //
-            const beforeAvatarUpload = file => {
-                console.log(file)
-                const isJPG = file.type === 'image/jpeg';
-                const isLt2M = file.size / 1024 / 1024 < 2;
 
-                if (!isJPG) {
-                    root.$message.error('上传头像图片只能是 JPG 格式!');
-                }
-                if (!isLt2M) {
-                    root.$message.error('上传头像图片大小不能超过 2MB!');
-                }
-                const suffix = file.name
-                const key = encodeURI(`${suffix}`)
-                data.uploaadKey.key = key
-                return isJPG && isLt2M;
-            }
-            //获取七牛云的token
-            const getQiniuToken = () => {
-                let params = {
-                    accesskey: 'gKSspSs6S6ZtVbEJ6phllzZ_iDgAlKUHhuy7wKCW',
-                    secretkey: 'snQe1ZFy3WXe0zXwLpWgc4PY4Es0080yXG_9HO0N',
-                    buckety: 'litingchen--vue3',
-                }
-                Qiniutoken(params).then(res => {
-                    data.uploaadKey.token = res.data.data.token
-                })
-            }
             // computed(()=>{
             // ...mapGetters(['ptRouter', 'tradingCenter']),
             // })
@@ -164,45 +126,17 @@
             onMounted(() => {
                 getCategoryData()
                 GetInfor()
-                getQiniuToken()
             })
 
             return {
                 form,
                 data,
                 onSubmit,
-                handleAvatarSuccess,
-                beforeAvatarUpload
-                // divs,
+                ImgUploadConfig,
             }
         }
     }
 </script>
-<style lang="scss">
-    .avatar-uploader .el-upload {
-        border: 1px dashed #d9d9d9;
-        border-radius: 6px;
-        cursor: pointer;
-        position: relative;
-        overflow: hidden;
-    }
+<style lang="scss" scoped>
 
-    .avatar-uploader .el-upload:hover {
-        border-color: #409EFF;
-    }
-
-    .avatar-uploader-icon {
-        font-size: 28px;
-        color: #8c939d;
-        width: 178px;
-        height: 178px;
-        line-height: 178px;
-        text-align: center;
-    }
-
-    .avatar {
-        width: 178px;
-        height: 178px;
-        display: block;
-    }
 </style>

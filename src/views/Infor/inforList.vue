@@ -130,7 +130,7 @@
 <script>
     import Dialogs from './dialog/index'
     import EditDialogs from './dialog/edit'
-    import {ref, reactive, watchEffect, onMounted,computed} from '@vue/composition-api'
+    import {ref, reactive, watchEffect, onMounted, computed} from '@vue/composition-api'
     import {getInfor, DeleteInfo} from '@/api/news'
     import {global} from '@/utils/globla.js'
     import {getInforCategory, timestampToTime} from "@/utils/common";
