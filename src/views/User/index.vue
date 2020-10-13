@@ -8,9 +8,9 @@
                         <el-row :gutter="16">
                             <el-col :span="3">
                                 <el-select v-model="data.selectValue">
-                                  <el-option v-for="item in data.option" :key="item.value"
-                                             :label="item.lable"
-                                             :value="item.value"></el-option>
+                                    <el-option v-for="item in data.option" :key="item.value"
+                                               :label="item.lable"
+                                               :value="item.value"></el-option>
                                 </el-select>
                             </el-col>
                             <el-col :span="4">
@@ -33,18 +33,25 @@
                 </el-button>
             </el-col>
         </el-row>
+        <div class="tablecon">
+            <TableCommon :config="data.tableConfig"></TableCommon>
+        </div>
     </div>
 </template>
 
 <script>
     import {reactive} from '@vue/composition-api'
+    import TableCommon from "@/components/TableCommon";
 
     export default {
         name: 'user',
+        components: {
+            TableCommon,
+        },
         setup(props, {root}) {
-          console.log(props,root)
+            console.log(props, root)
             const data = reactive({
-              selectValue:'name',
+                selectValue: 'name',
                 option: [
                     {value: 'name', lable: '姓名'},
                     {
@@ -53,7 +60,32 @@
                     {
                         value: 'email', lable: '邮箱'
                     }
-                ]
+                ],
+                tableConfig: {
+                    selection: true,
+                    tableHead: [
+                        {
+                            width: 300,
+                            prop: 'email',
+                            label: '邮箱/用户名',
+                        },
+                        {
+                            width: 100,
+                            prop: 'name',
+                            label: '真实姓名',
+                        }, {
+                            prop: 'phone',
+                            label: '手机号',
+                        }, {
+                            prop: 'address',
+                            label: '地址',
+                        }, {
+                            width: 150,
+                            prop: 'role',
+                            label: '角色',
+                        },
+                    ]
+                }
             })
             return {
                 data
@@ -65,6 +97,10 @@
     #user-warp {
         .label-wrap {
             @include labelDom(left, 60, 40);
+        }
+
+        .tablecon {
+            margin-top: 20px;
         }
     }
 </style>
