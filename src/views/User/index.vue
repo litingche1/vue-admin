@@ -34,7 +34,19 @@
             </el-col>
         </el-row>
         <div class="tablecon">
-            <TableCommon :config="data.tableConfig"></TableCommon>
+            <TableCommon :config="data.tableConfig">
+                <template v-slot:status="slotData">
+                    {{slotData.data.name}}
+                    <el-switch
+                            active-color="#13ce66"
+                            inactive-color="#ff4949">
+                    </el-switch>
+                </template>
+                <template v-slot:operating="slotData">
+                    <el-button size="mini" type="danger">{{slotData.data.name}}</el-button>
+                    <el-button size="mini" type="success">{{slotData.data.name}}</el-button>
+                </template>
+            </TableCommon>
         </div>
     </div>
 </template>
@@ -73,16 +85,30 @@
                             width: 100,
                             prop: 'name',
                             label: '真实姓名',
-                        }, {
+                        },
+                        {
                             prop: 'phone',
                             label: '手机号',
-                        }, {
+                        },
+                        {
                             prop: 'address',
                             label: '地址',
-                        }, {
+                        },
+                        {
                             width: 150,
                             prop: 'role',
                             label: '角色',
+                        },
+                        {
+                            prop: 'status',
+                            label: '禁启用状态',
+                            isSlot:'slot',
+                            slotName:'status'
+                        },
+                        {
+                            label: '操作',
+                            isSlot:'slot',
+                            slotName:'operating'
                         },
                     ]
                 }

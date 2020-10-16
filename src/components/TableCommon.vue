@@ -8,13 +8,21 @@
                 type="selection"
                 width="55">
         </el-table-column>
-        <el-table-column
-                v-for="item in data.tableConfig.tableHead"
-                :key="item.prop"
-                :prop="item.prop"
-                :label="item.label"
-                :width="item.width">
-        </el-table-column>
+        <template v-for="item in data.tableConfig.tableHead">
+            <el-table-column v-if="item.isSlot==='slot'" :key="item.prop" :prop="item.prop" :label="item.label"  :width="item.width">
+                <template slot-scope="scope">
+                    <slot :name="item.slotName" :data="scope.row"></slot>
+                </template>
+            </el-table-column>
+            <el-table-column
+                    v-else
+                    :key="item.prop"
+                    :prop="item.prop"
+                    :label="item.label"
+                    :width="item.width">
+            </el-table-column>
+        </template>
+
 
     </el-table>
 </template>
@@ -27,7 +35,8 @@
         props: {
             config: {
                 type: Object,
-                default: () => {}
+                default: () => {
+                }
             }
         },
         setup(props, {root}) {
@@ -63,10 +72,11 @@
                     tableHead: []
                 }
             })
-            const initialization = () => {
+            let initialization = () => {
                 let configData = props.config
+                let keys=Object.keys(data.tableConfig)
                 for (let key in configData) {
-                    if (data.tableConfig[key]) {
+                    if(keys.includes(key)){
                         data.tableConfig[key] = configData[key]
                     }
                 }
