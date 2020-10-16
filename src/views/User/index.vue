@@ -65,7 +65,9 @@
             const data = reactive({
                 selectValue: 'name',
                 option: [
-                    {value: 'name', lable: '姓名'},
+                    {
+                        value: 'name', lable: '姓名'
+                    },
                     {
                         value: 'phone', lable: '手机号'
                     },
@@ -102,15 +104,23 @@
                         {
                             prop: 'status',
                             label: '禁启用状态',
-                            isSlot:'slot',
-                            slotName:'status'
+                            isSlot: 'slot',
+                            slotName: 'status'
                         },
                         {
                             label: '操作',
-                            isSlot:'slot',
-                            slotName:'operating'
+                            isSlot: 'slot',
+                            slotName: 'operating'
                         },
-                    ]
+                    ],
+                    requestData: {
+                        url: '/news/getList/',
+                        method: 'post',
+                        params: {
+                            pageNumber: 1,
+                            pageSize: 10
+                        }
+                    }
                 }
             })
             return {

@@ -25,6 +25,7 @@ export function getInforCategory() {
         getCategoryDataAll
     }
 }
+//时间戳转换成日期
 export function timestampToTime(timestamp) {
     let date = new Date(timestamp * 1000);//时间戳为10位需*1000，时间戳为13位的话不需乘1000
     let Y = date.getFullYear() + '-';
@@ -35,10 +36,18 @@ export function timestampToTime(timestamp) {
     let s = date.getSeconds();
     return Y+M+D+h+m+s;
 }
+//七牛云请求图片接口
 export function  Qiniutoken(data){
     return request({
         method: 'post',
         url: "/uploadImgToken/",
         data,
+    })
+}
+export function RequestTable(data) {
+    return request({
+        method: data.method||'post',
+        url: data.url,
+        data:data.params,
     })
 }

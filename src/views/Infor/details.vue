@@ -35,7 +35,7 @@
     import {EditInfo, getInfor} from '@/api/news'
     import {getInforCategory, timestampToTime} from "@/utils/common";
     import {quillEditor} from "vue-quill-editor";
-    import ImgUpload from "@c/ImgUpload";
+    import ImgUpload from "@c/ImgUpload/index";
     import 'quill/dist/quill.core.css';
     import 'quill/dist/quill.snow.css';
     import 'quill/dist/quill.bubble.css';

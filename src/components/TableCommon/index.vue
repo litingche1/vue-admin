@@ -28,8 +28,8 @@
 </template>
 
 <script>
-    import {reactive, onBeforeMount} from '@vue/composition-api'
-
+    import {reactive, onBeforeMount,watchEffect} from '@vue/composition-api'
+    import {LodaTableData} from './tableData'
     export default {
         name: "TableCommon",
         props: {
@@ -40,39 +40,42 @@
             }
         },
         setup(props, {root}) {
-            console.log(props, root)
+            const {tableResData,requestTableData} =LodaTableData({root})
             const data = reactive({
-                tableData: [{
-                    email: '2016-05-02',
-                    name: '王小虎',
-                    phone: 137220124311,
-                    address: '上海市普陀区金沙江路 1518 弄',
-                    role: '超级管理员'
-                }, {
-                    email: '2016-05-04',
-                    name: '王小虎',
-                    phone: 187220124311,
-                    address: '上海市普陀区金沙江路 1517 弄',
-                    role: '普通管理员'
-                }, {
-                    email: '2016-05-01',
-                    name: '王小虎',
-                    phone: 137220124311,
-                    address: '上海市普陀区金沙江路 1519 弄',
-                    role: '普通管理员2'
-                }, {
-                    email: '2016-05-03',
-                    name: '王小虎',
-                    phone: 137220124311,
-                    address: '上海市普陀区金沙江路 1516 弄',
-                    role: '普通管理员3'
-                }],
+                tableData: [
+                //     {
+                //     email: '2016-05-02',
+                //     name: '王小虎',
+                //     phone: 137220124311,
+                //     address: '上海市普陀区金沙江路 1518 弄',
+                //     role: '超级管理员'
+                // }, {
+                //     email: '2016-05-04',
+                //     name: '王小虎',
+                //     phone: 187220124311,
+                //     address: '上海市普陀区金沙江路 1517 弄',
+                //     role: '普通管理员'
+                // }, {
+                //     email: '2016-05-01',
+                //     name: '王小虎',
+                //     phone: 137220124311,
+                //     address: '上海市普陀区金沙江路 1519 弄',
+                //     role: '普通管理员2'
+                // }, {
+                //     email: '2016-05-03',
+                //     name: '王小虎',
+                //     phone: 137220124311,
+                //     address: '上海市普陀区金沙江路 1516 弄',
+                //     role: '普通管理员3'
+                // }
+                ],
                 tableConfig: {
                     selection: false,
-                    tableHead: []
+                    tableHead: [],
+                    requestData:{},
                 }
             })
-            let initialization = () => {
+            const initialization = () => {
                 let configData = props.config
                 let keys=Object.keys(data.tableConfig)
                 for (let key in configData) {
@@ -81,8 +84,13 @@
                     }
                 }
             }
+            //监听接口返回来的值
+            watchEffect(()=>{
+                data.tableData=tableResData.item
+            })
             onBeforeMount(() => {
                 initialization()
+                requestTableData(data.tableConfig.requestData)
             })
             return {
                 data
