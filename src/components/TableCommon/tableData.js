@@ -3,11 +3,13 @@ import {RequestTable} from '@/utils/common'
 
 export function LodaTableData() {
     const tableResData = reactive({
-        item: []
+        item: [],
+        tableTotal:0,
     })
     const requestTableData = params => {
         RequestTable(params).then(res => {
             tableResData.item=res.data.data.data
+            tableResData.tableTotal=res.data.data.total
         }).catch(err => {
             console.log(err)
         })

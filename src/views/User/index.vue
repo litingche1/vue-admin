@@ -120,7 +120,9 @@
                             pageNumber: 1,
                             pageSize: 10
                         }
-                    }
+                    },
+                    paginationShow:true,
+                    paginationPageSizes: [5,10,20]
                 }
             })
             return {
