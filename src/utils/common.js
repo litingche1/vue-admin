@@ -51,3 +51,11 @@ export function RequestTable(data) {
         data:data.params,
     })
 }
+//获取省、市、区
+export function getCityPicker(data){
+    return request({
+        method: 'post',
+        url: '/cityPicker/',
+        data:data,
+    })
+}

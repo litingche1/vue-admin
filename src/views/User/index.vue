@@ -28,7 +28,7 @@
                 </div>
             </el-col>
             <el-col :span="4">
-                <el-button type="danger" class="pull-right">
+                <el-button type="danger" class="pull-right" @click="userAdds">
                     添加用户
                 </el-button>
             </el-col>
@@ -47,6 +47,7 @@
                     <el-button size="mini" type="success">{{slotData.data.name}}</el-button>
                 </template>
             </TableCommon>
+            <user-add :showlog.sync="data.dialogShow"></user-add>
         </div>
     </div>
 </template>
@@ -54,16 +55,19 @@
 <script>
     import {reactive} from '@vue/composition-api'
     import TableCommon from "@/components/TableCommon";
+    import userAdd from './dialog/add'
 
     export default {
         name: 'user',
         components: {
             TableCommon,
+            userAdd,
         },
         setup(props, {root}) {
             console.log(props, root)
             const data = reactive({
                 selectValue: 'name',
+                dialogShow: false,
                 option: [
                     {
                         value: 'name', lable: '姓名'
@@ -121,12 +125,17 @@
                             pageSize: 10
                         }
                     },
-                    paginationShow:true,
-                    paginationPageSizes: [5,10,20]
+                    paginationShow: true,
+                    paginationPageSizes: [5, 10, 20]
                 }
             })
+            const userAdds = () => {
+                data.dialogShow = true
+                console.log(data.dialogShow)
+            }
             return {
-                data
+                data,
+                userAdds
             }
         }
     }
