@@ -12,50 +12,69 @@ export function CityPicker() {
         streetData: [],
         streetValue: ''
     })
+    const resData = reactive({
+        provinceValue: '',
+        cityValue: '',
+        areaValue: '',
+        streetValue: ''
+    })
+    //获取省份
     const getCityPickerData = () => {
-        getCityPicker({type: "province"}).then(res => {
-            data.provinceData = res.data.data.data
-            console.log(res.data.data.data)
+        getData({type: "province"})
+    }
+    //获取省、市、区数据
+    const getData=(params)=>{
+        getCityPicker(params).then(res => {
+            data[`${params.type}Data`] = res.data.data.data
         }).catch(err => {
             console.log(err)
         })
     }
+    //获取城市
     const changeProvince = () => {
-        data.cityData = ''
-        data.cityValue = ''
-        getCityPicker({type: "city", province_code: data.provinceValue}).then(res => {
-            data.cityData = res.data.data.data
-            console.log(res.data.data.data)
-        }).catch(err => {
-            console.log(err)
-        })
+        resultData('city')
+        getData({type: "city", province_code: data.provinceValue})
     }
+    //获取区县
     const changeCity = () => {
-        data.areaData = ''
-        data.areaValue = ''
-        getCityPicker({type: "area", city_code: data.cityValue}).then(res => {
-            data.areaData = res.data.data.data
-            console.log(res.data.data.data)
-        }).catch(err => {
-            console.log(err)
-        })
+        resultData('area')
+        getData({type: "area", city_code: data.cityValue})
     }
+    const changeStreet = ()=>{
+        resultData()
+    }
+    //获取街道
     const changeArea = () => {
-        data.streetData = ''
-        data.streetValue = ''
-        getCityPicker({type: "street", area_code: data.areaValue}).then(res => {
-            data.streetData = res.data.data.data
-            console.log(res.data.data.data)
-        }).catch(err => {
-            console.log(err)
-        })
+        resultData('street')
+        getData({type: "street", area_code: data.areaValue})
+    }
+    //下拉框值改变的时候先清除上一次的绑定的数据
+    const resultData = params => {
+        const arr = {
+            city: ['cityValue', 'areaValue', 'streetValue'],
+            area: ['areaValue', 'streetValue'],
+            street: ['streetValue']
+        }
+        let arrData = arr[params]
+        if (arrData) {
+            arrData.forEach(item => data[item] = '')
+        }
+        traverseData()
+    }
+    //把选中的值返回父组件
+    const traverseData = () => {
+        for (let key in resData) {
+            resData[key] = data[key]
+        }
     }
     return {
         ...toRefs(data),
+        resData,
         getCityPickerData,
         changeProvince,
         changeCity,
-        changeArea
+        changeArea,
+        changeStreet
     }
 
 }
