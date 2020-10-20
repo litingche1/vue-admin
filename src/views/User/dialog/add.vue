@@ -17,13 +17,17 @@
                 <el-input></el-input>
             </el-form-item>
             <el-form-item label="地区:" :label-width="formLabelWidth">
-            <CityPickers :confingCityData.sync="confingCityData"/>
+                <CityPickers :configCityData.sync="confingCityData"/>
+<!--            <CityPickers :cityConfig="['province','city','area']" :configCityData.sync="confingCityData"/>-->
             </el-form-item>
             <el-form-item label="是否启用:" :label-width="formLabelWidth">
-                <el-input></el-input>
+                <el-radio v-model="data.radio" label="1">启用</el-radio>
+                <el-radio v-model="data.radio" label="2">禁止</el-radio>
             </el-form-item>
             <el-form-item label="角色:" :label-width="formLabelWidth">
-                <el-input></el-input>
+                <el-checkbox-group v-model="data.checkList">
+                    <el-checkbox v-for="item in data.checkData" :label="item.name" :key="item.role">{{item.name}}</el-checkbox>
+                </el-checkbox-group>
             </el-form-item>
             <!--            <el-form-item label="类型:" :label-width="formLabelWidth">-->
             <!--                <el-select v-model="forms.region" placeholder="请选择分类">-->
@@ -57,10 +61,10 @@
 </template>
 
 <script>
-    import {ref, reactive, watchEffect} from '@vue/composition-api'
+    import {ref, reactive, watchEffect,onBeforeMount} from '@vue/composition-api'
     import {EditInfo} from '@/api/news'
     import CityPickers from '@c/CityPicker/index'
-
+   import{getRole} from '@/api/user'
     export default {
         name: 'dialogs',
         props: {
@@ -78,6 +82,34 @@
             CityPickers,
         },
         setup(props, {root, emit}) {
+            const data = reactive({
+                radio: '1',
+                checkList:[],
+                checkData:[]
+            })
+
+            const opentck =()=>{
+                getRole().then(res=>{
+                    data.checkData=res.data.data
+                    console.log(res.data.data)
+                })
+            }
+            onBeforeMount(()=>{
+                // getRole().then(res=>{
+                //     console.log(res.data.data)
+                // })
+            })
+
+
+
+
+
+
+
+
+
+
+
             const showdialog = ref(false)
             const ruleForm = ref(null)
             const button_status = ref(false)
@@ -107,14 +139,14 @@
                 emit('update:showlog', false)
             }
             //弹出框打开的时候执行该函数
-            const opentck = () => {
-                const data = props.dataItem.item
-                options.item = props.catergory
-                forms.name = data.title
-                forms.resource = data.content
-                const categoryName = options.item.filter(item => item.id === data.categoryId)
-                forms.region = categoryName[0].category_name
-            }
+            // const opentck = () => {
+            //     const data = props.dataItem.item
+            //     options.item = props.catergory
+            //     forms.name = data.title
+            //     forms.resource = data.content
+            //     const categoryName = options.item.filter(item => item.id === data.categoryId)
+            //     forms.region = categoryName[0].category_name
+            // }
             const editInfo = () => {
                 let params = {
                     id: props.dataItem.item.id,
@@ -176,7 +208,8 @@
                 formLabelWidth,
                 options,
                 opentck,
-                submit
+                submit,
+                data
             }
         }
     }

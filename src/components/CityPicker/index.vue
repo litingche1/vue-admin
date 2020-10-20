@@ -2,7 +2,7 @@
     <div class="over-hidden">
         <el-row :gutter="10">
             <el-col :span="6">
-                <el-select v-model="provinceValue" placeholder="请选择分类" @change="changeProvince">
+                <el-select v-if="initCityPicker.province" v-model="provinceValue" placeholder="请选择分类" @change="changeProvince">
                     <el-option
                             v-for="item in provinceData"
                             :key="item.PROVINCE_CODE"
@@ -12,7 +12,7 @@
                 </el-select>
             </el-col>
             <el-col :span="6">
-                <el-select v-model="cityValue" placeholder="请选择分类" @change="changeCity">
+                <el-select v-if="initCityPicker.city" v-model="cityValue" placeholder="请选择分类" @change="changeCity">
                     <el-option
                             v-for="item in cityData"
                             :key="item.CITY_CODE"
@@ -22,7 +22,7 @@
                 </el-select>
             </el-col>
             <el-col :span="6">
-                <el-select v-model="areaValue" placeholder="请选择分类" @change="changeArea">
+                <el-select v-if="initCityPicker.area" v-model="areaValue" placeholder="请选择分类" @change="changeArea">
                     <el-option
                             v-for="item in areaData"
                             :key="item.AREA_CODE"
@@ -32,7 +32,7 @@
                 </el-select>
             </el-col>
             <el-col :span="6">
-                <el-select v-model="streetValue" placeholder="请选择分类">
+                <el-select v-if="initCityPicker.street" v-model="streetValue" placeholder="请选择分类" @change="changeStreet">
                     <el-option
                             v-for="item in streetData"
                             :key="item.STREET_CODE"
@@ -47,20 +47,54 @@
 
 <script>
     import {CityPicker} from './config'
-
+    import {watch} from '@vue/composition-api'
+    import {reactive} from '@vue/composition-api'
     export default {
         name: "index",
         props: {
-            confingCityData: {
+            configCityData: {
                 type: Object,
                 default: () => {
                 }
+            },
+            cityConfig:{
+                type:Array,
+                default:()=>[]
             }
         },
-        setup(props) {
-            console.log(props)
-            const {getCityPickerData, provinceValue, provinceData, changeProvince, cityData, cityValue, changeCity, areaData, areaValue, changeArea, streetData, streetValue} = CityPicker()
+        setup(props, {emit}) {
+            const initCityPicker=reactive({
+                province:false,
+                city:false,
+                area:false,
+                street:false,
+            })
+            const {getCityPickerData, provinceValue, provinceData, changeProvince, cityData, cityValue, changeCity, areaData, areaValue, changeArea, streetData, streetValue, resData,changeStreet} = CityPicker()
             getCityPickerData()
+            //监听
+            watch([
+                () => resData.provinceValue,
+                () => resData.cityValue,
+                () => resData.areaValue,
+                () => resData.streetValue,
+            ], () => {
+                console.log(resData)
+                emit("update:confingCityData", resData)
+            })
+            //初始化配置
+            const setInit = ()=>{
+                let data=props.cityConfig
+                if(data.length<1){
+                    for(let key in initCityPicker){
+                        initCityPicker[key]=true
+                    }
+                }else{
+                    data.forEach(item=>{
+                        initCityPicker[item]=item
+                    })
+                }
+            }
+            setInit()
             return {
                 provinceValue,
                 provinceData,
@@ -72,7 +106,9 @@
                 areaValue,
                 changeArea,
                 streetValue,
-                streetData
+                streetData,
+                changeStreet,
+                initCityPicker
             }
         }
     }
