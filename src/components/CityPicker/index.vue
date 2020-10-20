@@ -78,7 +78,6 @@
                 () => resData.areaValue,
                 () => resData.streetValue,
             ], () => {
-                console.log(resData)
                 emit("update:confingCityData", resData)
             })
             //初始化配置

@@ -34,17 +34,22 @@
             </el-col>
         </el-row>
         <div class="tablecon">
-            <TableCommon :config="data.tableConfig">
+            <TableCommon ref="tableCom" :config="data.tableConfig" :multipleChoice.sync="data.tableDelte">
                 <template v-slot:status="slotData">
-                    {{slotData.data.name}}
                     <el-switch
+                            v-model="slotData.data.status"
+                            active-value="1"
+                            inactive-value="2"
                             active-color="#13ce66"
                             inactive-color="#ff4949">
                     </el-switch>
                 </template>
                 <template v-slot:operating="slotData">
-                    <el-button size="mini" type="danger">{{slotData.data.name}}</el-button>
-                    <el-button size="mini" type="success">{{slotData.data.name}}</el-button>
+                    <el-button size="mini" type="danger" @click="deleteRow(slotData.data)">删除</el-button>
+                    <el-button size="mini" type="success">编辑</el-button>
+                </template>
+                <template v-slot:tableFooter>
+                    <el-button size="small" @click="deleteAll">批量删除</el-button>
                 </template>
             </TableCommon>
             <user-add :showlog.sync="data.dialogShow"></user-add>
@@ -56,6 +61,8 @@
     import {reactive} from '@vue/composition-api'
     import TableCommon from "@/components/TableCommon";
     import userAdd from './dialog/add'
+    import {deleteUser} from '@/api/user'
+    import {global} from '@/utils/globla.js'
 
     export default {
         name: 'user',
@@ -63,11 +70,13 @@
             TableCommon,
             userAdd,
         },
-        setup(props, {root}) {
+        setup(props, {root, refs}) {
             console.log(props, root)
+            const {confirm} = global()
             const data = reactive({
                 selectValue: 'name',
                 dialogShow: false,
+                tableDelte: {},
                 option: [
                     {
                         value: 'name', lable: '姓名'
@@ -84,12 +93,12 @@
                     tableHead: [
                         {
                             width: 300,
-                            prop: 'email',
+                            prop: 'username',
                             label: '邮箱/用户名',
                         },
                         {
                             width: 100,
-                            prop: 'name',
+                            prop: 'truename',
                             label: '真实姓名',
                         },
                         {
@@ -97,7 +106,7 @@
                             label: '手机号',
                         },
                         {
-                            prop: 'address',
+                            prop: 'region',
                             label: '地址',
                         },
                         {
@@ -118,7 +127,7 @@
                         },
                     ],
                     requestData: {
-                        url: '/news/getList/',
+                        url: '/user/getList/',
                         method: 'post',
                         params: {
                             pageNumber: 1,
@@ -131,11 +140,56 @@
             })
             const userAdds = () => {
                 data.dialogShow = true
-                console.log(data.dialogShow)
+            }
+            //批量删除
+            const deleteAll = () => {
+                let tableUserId = data.tableDelte.tableId
+                if (!tableUserId || tableUserId.length === 0) {
+                    root.$message({
+                        message: '请选择需要删除的数据',
+                        type: 'error'
+                    })
+                    return false
+                }
+                confirm({
+                    content: '此操作将永久删除该文件, 是否继续?',
+                    tip: '警告',
+                    fn: deleteTableList,
+                })
+                console.log(tableUserId)
+
+            }
+            //删除单行
+            const deleteRow = val => {
+                console.log(val)
+                data.tableDelte.tableId = [val.id]
+                confirm({
+                    content: '此操作将永久删除该文件, 是否继续?',
+                    tip: '警告',
+                    fn: deleteTableList,
+                })
+            }
+            //删除表格数据的接口
+            const deleteTableList = () => {
+                let resData = {id: data.tableDelte.tableId}
+                deleteUser(resData).then(res => {
+                    if (res.data.resCode === 0) {
+                        root.$message({
+                            message: res.data.message,
+                            type: 'success'
+                        })
+                        //刷新表格中的数据
+                        refs.tableCom.refreshTable()
+                    }
+                }).catch(err => {
+                    console.log(err)
+                })
             }
             return {
                 data,
-                userAdds
+                userAdds,
+                deleteAll,
+                deleteRow
             }
         }
     }

@@ -3,6 +3,7 @@
         <el-table
                 :data="data.tableData"
                 border
+                @selection-change="tableHandleSelectionChange"
                 style="width: 100%">
             <el-table-column
                     v-if="data.tableConfig.selection"
@@ -13,6 +14,7 @@
                 <el-table-column v-if="item.isSlot==='slot'" :key="item.prop" :prop="item.prop" :label="item.label"
                                  :width="item.width">
                     <template slot-scope="scope">
+<!--                        //父组件获取数据的方式是设置的slot的名字.data,因为这里设置了：data,例如slotName: 'status',v-slot:status="slotData"父组件中获取改行数据的方法是slotData.data-->
                         <slot :name="item.slotName" :data="scope.row"></slot>
                     </template>
                 </el-table-column>
@@ -25,17 +27,22 @@
                 </el-table-column>
             </template>
         </el-table>
-        <el-pagination
-                v-if="data.tableConfig.paginationShow"
-                @size-change="handleSizeChange"
-                @current-change="handleCurrentChange"
-                :current-page="data.pagination.currentPage"
-                background
-                :page-sizes="data.tableConfig.paginationPageSizes"
-                :page-size="data.pagination.pageSize"
-                :layout="data.tableConfig.paginationLayout"
-                :total="data.pagination.total">
-        </el-pagination>
+        <div class="table-footer">
+            <slot name="tableFooter"></slot>
+            <el-pagination
+                    v-if="data.tableConfig.paginationShow"
+                    class="pull-right"
+                    @size-change="handleSizeChange"
+                    @current-change="handleCurrentChange"
+                    :current-page="data.pagination.currentPage"
+                    background
+                    :page-sizes="data.tableConfig.paginationPageSizes"
+                    :page-size="data.pagination.pageSize"
+                    :layout="data.tableConfig.paginationLayout"
+                    :total="data.pagination.total">
+            </el-pagination>
+        </div>
+
     </div>
 
 </template>
@@ -52,48 +59,27 @@
                 type: Object,
                 default: () => {
                 }
+            },
+            multipleChoice: {
+                type: Object,
+                default: () => {
+                }
             }
         },
-        setup(props, {root}) {
+        setup(props, {root, emit}) {
             //获取表格数据的方法
             const {tableResData, requestTableData} = LodaTableData({root})
             //分页
             const {paginationData, handleSizeChange, handleCurrentChange, setPageSize} = tablePagination()
             const data = reactive({
-                tableData: [
-                    //     {
-                    //     email: '2016-05-02',
-                    //     name: '王小虎',
-                    //     phone: 137220124311,
-                    //     address: '上海市普陀区金沙江路 1518 弄',
-                    //     role: '超级管理员'
-                    // }, {
-                    //     email: '2016-05-04',
-                    //     name: '王小虎',
-                    //     phone: 187220124311,
-                    //     address: '上海市普陀区金沙江路 1517 弄',
-                    //     role: '普通管理员'
-                    // }, {
-                    //     email: '2016-05-01',
-                    //     name: '王小虎',
-                    //     phone: 137220124311,
-                    //     address: '上海市普陀区金沙江路 1519 弄',
-                    //     role: '普通管理员2'
-                    // }, {
-                    //     email: '2016-05-03',
-                    //     name: '王小虎',
-                    //     phone: 137220124311,
-                    //     address: '上海市普陀区金沙江路 1516 弄',
-                    //     role: '普通管理员3'
-                    // }
-                ],
+                tableData: [],
                 tableConfig: {
                     selection: false,
                     tableHead: [],
                     requestData: {},
                     paginationShow: true,
                     paginationPageSizes: [],
-                    paginationLayout:'total, sizes, prev, pager, next, jumper'
+                    paginationLayout: 'total, sizes, prev, pager, next, jumper'
                 },
                 pagination: {
                     pageSize: 0,
@@ -109,6 +95,17 @@
                         data.tableConfig[key] = configData[key]
                     }
                 }
+            }
+            //批量删除勾选框
+            const tableHandleSelectionChange = val => {
+                let data = {
+                    tableId: val.map(item => item.id)
+                }
+                emit('update:multipleChoice', data)
+            }
+            //刷新表格数据
+            const refreshTable = ()=>{
+                requestTableData(data.tableConfig.requestData)
             }
             //监听接口返回来的值
             watch([() => paginationData.currentPage, () => paginationData.pageSize], ([currentPage, pageSize]) => {
@@ -134,17 +131,19 @@
             })
             onBeforeMount(() => {
                 initialization()
-                data.pagination.pageSize=data.tableConfig.requestData.params.pageSize
+                data.pagination.pageSize = data.tableConfig.requestData.params.pageSize
                 setPageSize(data.pagination.pageSize)
                 requestTableData(data.tableConfig.requestData)
             })
             return {
-                data, handleSizeChange, handleCurrentChange
+                data, handleSizeChange, handleCurrentChange, tableHandleSelectionChange,refreshTable
             }
         }
     }
 </script>
 
 <style scoped>
-
+    .table-footer {
+        margin-top: 10px;
+    }
 </style>
