@@ -34,7 +34,7 @@
             </el-col>
         </el-row>
         <div class="tablecon">
-            <TableCommon ref="tableCom" :config="data.tableConfig" :multipleChoice.sync="data.tableDelte">
+            <TableCommon ref="tableComs" :config="data.tableConfig" :multipleChoice.sync="data.tableDelte">
                 <template v-slot:status="slotData">
                     <el-switch
                             v-model="slotData.data.status"
@@ -58,7 +58,7 @@
 </template>
 
 <script>
-    import {reactive} from '@vue/composition-api'
+    import {reactive,ref} from '@vue/composition-api'
     import TableCommon from "@/components/TableCommon";
     import userAdd from './dialog/add'
     import {deleteUser} from '@/api/user'
@@ -70,9 +70,10 @@
             TableCommon,
             userAdd,
         },
-        setup(props, {root, refs}) {
+        setup(props, {root}) {
             console.log(props, root)
             const {confirm} = global()
+            const tableComs  = ref(null)
             const data = reactive({
                 selectValue: 'name',
                 dialogShow: false,
@@ -179,7 +180,8 @@
                             type: 'success'
                         })
                         //刷新表格中的数据
-                        refs.tableCom.refreshTable()
+                        tableComs.value.refreshTable()
+                        // refs.tableCom.refreshTable()
                     }
                 }).catch(err => {
                     console.log(err)
@@ -189,7 +191,8 @@
                 data,
                 userAdds,
                 deleteAll,
-                deleteRow
+                deleteRow,
+                tableComs
             }
         }
     }
