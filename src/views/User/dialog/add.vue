@@ -6,7 +6,7 @@
             width="700px"
             @open="opentck"
     >
-        <el-form :model="data.form" ref="ruleForm">
+        <el-form :model="data.form" ref="ruleForm" :rules="rules">
             <el-form-item label="用户名:" :label-width="formLabelWidth" prop="username">
                 <el-input v-model="data.form.username" placeholder="请输入邮箱"></el-input>
             </el-form-item>
@@ -14,7 +14,7 @@
                 <el-input v-model="data.form.truename" placeholder="请输入姓名"></el-input>
             </el-form-item>
             <el-form-item label="密码:" :label-width="formLabelWidth" prop="password">
-                <el-input type="password" v-model="data.form.password" placeholder="请输入密码"></el-input>
+                <el-input type="password" v-model="data.form.password" placeholder="请输入6至20位数字+字母的密码"></el-input>
             </el-form-item>
             <el-form-item label="手机号:" :label-width="formLabelWidth" prop="phone">
                 <el-input v-model="data.form.phone" placeholder="请输入手机号"></el-input>
@@ -45,6 +45,11 @@
 </template>
 
 <script>
+    import {
+        stripscript,
+        validateEmail,
+        validatePassword,
+    } from '@/utils/validate'
     import {ref, reactive, watchEffect, onBeforeMount} from '@vue/composition-api'
     import CityPickers from '@c/CityPicker/index'
     import {getRole, addUser} from '@/api/user'
@@ -60,12 +65,46 @@
             },
             dataItem: {
                 type: Object
+            },
+            editData: {
+                type: Object,
+                default: () => {}
             }
         },
         components: {
             CityPickers,
         },
         setup(props, {root, emit, refs}) {
+            //验证用户名
+            let validateUsername = (rule, value, callback) => {
+                if (value === '') {
+                    callback(new Error('请输入用户名'))
+                } else if (validateEmail(value)) {
+                    callback(new Error('用户名格式有误'))
+                } else {
+                    callback()
+                }
+            }
+            //验证密码
+            let validatePass = (rule, value, callback) => {
+                data.form.password = stripscript(value)
+                value = data.form.password
+                if (value === '') {
+                    callback(new Error('请输入密码'))
+                } else if (validatePassword(value)) {
+                    callback(new Error('密码为6至20位数字+字母'))
+                } else {
+                    callback()
+                }
+            }
+            //表单校验规则
+            const rules = reactive({
+                password: [{validator: validatePass, trigger: 'blur'}],
+                username: [{validator: validateUsername, trigger: 'blur'}],
+                role: [
+                    {required: true, message: '请选择活动区域', trigger: 'change'}
+                ],
+            })
             const data = reactive({
                 checkData: [],
                 confingCityData: {},
@@ -84,14 +123,15 @@
                 getRole().then(res => {
                     data.checkData = res.data.data
                 })
+                let fromData = Object.assign({}, props.editData)
+                fromData.role = fromData.role.split(',')
+                data.form = fromData
             }
             onBeforeMount(() => {
                 // getRole().then(res=>{
                 //     console.log(res.data.data)
                 // })
             })
-
-
             const showdialog = ref(false)
             const ruleForm = ref(null)
             const button_status = ref(false)
@@ -109,54 +149,31 @@
                 refs.ruleForm.resetFields()
             }
             const submit = () => {
-                console.log(data.form)
-                if (!data.form.username) {
-                    root.$message({
-                        message: '用户名不能为空',
-                        type: 'error'
-                    })
-                    return false
-                }
-                if (!data.form.password) {
-                    root.$message({
-                        message: '密码不能为空',
-                        type: 'error'
-                    })
-                    return false
-                }
-                if (!data.form.status) {
-                    root.$message({
-                        message: '请选择是否禁用',
-                        type: 'error'
-                    })
-                    return false
-                }
-                if (data.form.role.length < 1) {
-                    root.$message({
-                        message: '请选择角色',
-                        type: 'error'
-                    })
-                    return false
-                }
-                let resData = JSON.parse(JSON.stringify(data.form))
-                resData.role = resData.role.join()
-                resData.region = JSON.stringify(data.confingCityData)
-                resData.password=sha1(resData.password)
-                addUser(resData).then(res => {
-                    if (res.data.resCode === 0) {
-                        root.$message({
-                            message: res.data.message,
-                            type: 'success'
+                refs.ruleForm.validate(valid => {
+                    if (valid) {
+                        let resData = JSON.parse(JSON.stringify(data.form))
+                        resData.role = resData.role.join()
+                        resData.region = JSON.stringify(data.confingCityData)
+                        resData.password = sha1(resData.password)
+                        addUser(resData).then(res => {
+                            if (res.data.resCode === 0) {
+                                root.$message({
+                                    message: res.data.message,
+                                    type: 'success'
+                                })
+                                emit('refresh')
+                            }
+                        }).catch(err => {
+                            console.log(err)
                         })
+                        // button_status.value = true
+                        resetFields()
+                        closedshow()
+                    } else {
+                        root.$message.error('表单填写不完整')
+                        return false
                     }
-                    console.log(res)
-                }).catch(err => {
-                    console.log(err)
                 })
-                // button_status.value = true
-                resetFields()
-                closedshow()
-
             }
             return {
                 closedshow,
@@ -166,7 +183,8 @@
                 formLabelWidth,
                 opentck,
                 submit,
-                data
+                data,
+                rules
             }
         }
     }

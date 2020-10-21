@@ -29,3 +29,13 @@ export function deleteUser(data) {
         data,
     })
 }
+/**
+ * 用户禁启用
+ */
+export function activesUser(data) {
+    return request({
+        method: 'post',
+        url: "/user/actives/",
+        data,
+    })
+}

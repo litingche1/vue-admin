@@ -41,27 +41,29 @@
                             active-value="1"
                             inactive-value="2"
                             active-color="#13ce66"
-                            inactive-color="#ff4949">
+                            inactive-color="#ff4949"
+                            @change="switchChange(slotData.data)"
+                    >
                     </el-switch>
                 </template>
                 <template v-slot:operating="slotData">
                     <el-button size="mini" type="danger" @click="deleteRow(slotData.data)">删除</el-button>
-                    <el-button size="mini" type="success">编辑</el-button>
+                    <el-button size="mini" type="success" @click="editTable(slotData.data)">编辑</el-button>
                 </template>
                 <template v-slot:tableFooter>
                     <el-button size="small" @click="deleteAll">批量删除</el-button>
                 </template>
             </TableCommon>
-            <user-add :showlog.sync="data.dialogShow"></user-add>
+            <user-add :showlog.sync="data.dialogShow" @refresh="refreshTable" :editData="data.tableRow"></user-add>
         </div>
     </div>
 </template>
 
 <script>
-    import {reactive,ref} from '@vue/composition-api'
+    import {reactive, ref} from '@vue/composition-api'
     import TableCommon from "@/components/TableCommon";
     import userAdd from './dialog/add'
-    import {deleteUser} from '@/api/user'
+    import {deleteUser,activesUser} from '@/api/user'
     import {global} from '@/utils/globla.js'
 
     export default {
@@ -73,7 +75,8 @@
         setup(props, {root}) {
             console.log(props, root)
             const {confirm} = global()
-            const tableComs  = ref(null)
+            const tableComs = ref(null)
+            const switchStatus = ref(false)
             const data = reactive({
                 selectValue: 'name',
                 dialogShow: false,
@@ -137,10 +140,18 @@
                     },
                     paginationShow: true,
                     paginationPageSizes: [5, 10, 20]
-                }
+                },
+                tableRow:{}
             })
             const userAdds = () => {
                 data.dialogShow = true
+            }
+            //刷新表格数据
+            const refreshTable = () => {
+                //第一种
+                tableComs.value.refreshTable()
+                //第二种
+                // refs.tableCom.refreshTable()
             }
             //批量删除
             const deleteAll = () => {
@@ -180,10 +191,38 @@
                             type: 'success'
                         })
                         //刷新表格中的数据
-                        tableComs.value.refreshTable()
-                        // refs.tableCom.refreshTable()
+                        refreshTable()
                     }
                 }).catch(err => {
+                    console.log(err)
+                })
+            }
+            //编辑
+            const editTable = val => {
+                // console.log(val)
+                userAdds()
+                data.tableRow=val
+            }
+            //用户禁启用
+            const switchChange = val=>{
+                console.log(val)
+                if(switchStatus.value) return false
+                switchStatus.value=true
+                let params={
+                    id:val.id,
+                    status:val.status
+                }
+                activesUser(params).then(res=>{
+                    if (res.data.resCode === 0) {
+                        root.$message({
+                            message: res.data.message,
+                            type: 'success'
+                        })
+                        //刷新表格中的数据
+                        refreshTable()
+                        switchStatus.value=false
+                    }
+                }).catch(err=>{
                     console.log(err)
                 })
             }
@@ -192,7 +231,10 @@
                 userAdds,
                 deleteAll,
                 deleteRow,
-                tableComs
+                tableComs,
+                refreshTable,
+                editTable,
+                switchChange
             }
         }
     }
