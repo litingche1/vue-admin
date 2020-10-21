@@ -124,8 +124,16 @@
                     data.checkData = res.data.data
                 })
                 let fromData = Object.assign({}, props.editData)
-                fromData.role = fromData.role.split(',')
-                data.form = fromData
+                if(fromData.id){
+                    fromData.role = fromData.role.split(',')
+                }else{
+                    data.form.id && delete data.form.id
+                }
+                for(let key in fromData){
+                    data.form[key]=fromData[key]
+                }
+console.log(data.form)
+                // data.form = fromData
             }
             onBeforeMount(() => {
                 // getRole().then(res=>{
