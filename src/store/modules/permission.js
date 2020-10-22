@@ -13,10 +13,13 @@ const mutations = {
     SET_Router(state, value) {
         state.addRouter = value
         state.allRouter = defaultRouterMap.concat(value)
+        console.log(state.allRouter)
     }
 }
 const getters = {
-    role: state => state.role
+    role: state => state.role,
+    allRouter: state => state.allRouter,
+    addRouter: state => state.addRouter,
 }
 const actions = {
     /*
@@ -43,12 +46,19 @@ const actions = {
     GreatRouter({commit}, data) {
         return new Promise((resolve) => {
             console.log(resolve, data, commit)
-            const roter = asyncRouterMap.filter(item => {
-                if (data.includes(item.meta.system)) {
-                    return item
-                }
-            })
+            let roter = [];
+            if (data.includes('admin')) {
+                roter = asyncRouterMap
+            } else {
+                roter = asyncRouterMap.filter(item => {
+                    if (data.includes(item.meta.system)) {
+                        return item
+                    }
+                })
+            }
+
             commit('SET_Router', roter)
+            resolve()
             // console.log(roter)
         })
     }

@@ -147,13 +147,13 @@
             const userAdds = () => {
                 data.dialogShow = true
                 data.tableRow = Object.assign({
-                    username: '',
-                    password: '',
-                    truename: '',
-                    phone: '',
-                    region: '',
-                    status: '1',
-                    role: []
+                    // username: '',
+                    // password: '',
+                    // truename: '',
+                    // phone: '',
+                    // region: '',
+                    // status: '1',
+                    // role: []
                 })
             }
             //刷新表格数据

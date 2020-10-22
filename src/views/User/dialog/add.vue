@@ -4,7 +4,7 @@
             :visible.sync="showdialog"
             @close="closedshow"
             width="700px"
-            @open="opentck"
+            @opened="opentck"
     >
         <el-form :model="data.form" ref="ruleForm" :rules="rules">
             <el-form-item label="用户名:" :label-width="formLabelWidth" prop="username">
@@ -139,27 +139,28 @@
                 getSystem().then(res => {
                     data.checkData = res.data.data
                 })
-                let fromData = props.editData
+                let editData = props.editData
                 //编辑状态
-                if (fromData.id) {
-                    fromData.role = fromData.role.split(',')
-                    for (let key in fromData) {
-                        data.form[key] = fromData[key]
+                if (editData.id) {
+                    editData.role = editData.role.split(',')
+                    for (let key in editData) {
+                        data.form[key] = editData[key]
                     }
                     console.log(data.form)
                 } else {//新增状态
                     console.log(9999)
                     data.form.id && delete data.form.id
-                    for (let key in fromData) {
-                        if (key === 'role') {
-                            data.form.role = []
-                        } else if (key === 'status') {
-                            data.form.status = '1'
-                        } else {
-                            data.form[key] = fromData[key]
-                        }
-
-                    }
+                    console.log(data.form)
+                    // for (let key in editData) {
+                    //     if (key === 'role') {
+                    //         data.form.role = []
+                    //     } else if (key === 'status') {
+                    //         data.form.status = '1'
+                    //     } else {
+                    //         data.form[key] = editData[key]
+                    //     }
+                    //
+                    // }
                 }
 
             }

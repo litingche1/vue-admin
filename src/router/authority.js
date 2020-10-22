@@ -1,5 +1,5 @@
 import router from './index';
-import { getToken} from '@/utils/user'
+import {getToken} from '@/utils/user'
 import store from '../store/index'
 //白名单
 const whiteRouter = ['/login'];
@@ -21,15 +21,25 @@ router.beforeEach((to, from, next) => {
              * 2、以什么条件处理
              * roles[]
              */
-        if(store.getters['permission/role'].length===0){
-            store.dispatch('permission/getRole').then(res=>{
+            if (store.getters['permission/role'].length === 0) {
+                store.dispatch('permission/getRole').then(res => {
+                    store.dispatch('permission/GreatRouter', res).then(res => {
+                        let addRouter = store.getters['permission/addRouter']
+                        let allRouter = store.getters['permission/allRouter']
+                        //更新路由
+                        router.options.routes = allRouter
+                        //动态添加路由
+                        router.addRoutes(addRouter)
+                        console.log(res)
+                        next({...to, replace: true})
+                        // next({...to,replace:true})
+                    })
+                })
+            } else {
+                next()
+            }
 
-                store.dispatch('permission/GreatRouter',res)
-            })
-        }
 
-
-            // next()
         }
 
     } else {
