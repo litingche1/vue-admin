@@ -107,6 +107,16 @@
             const refreshTable = ()=>{
                 requestTableData(data.tableConfig.requestData)
             }
+            //带参数刷新表格数据
+            const refreshTableData= params=>{
+                let resData = Object.assign({},params,{
+                    pageNumber:1,
+                    pageSize: 10
+                })
+                data.tableConfig.requestData.params=resData
+                requestTableData(data.tableConfig.requestData)
+                console.log(params)
+            }
             //监听接口返回来的值
             watch([() => paginationData.currentPage, () => paginationData.pageSize], ([currentPage, pageSize]) => {
                 data.pagination.pageSize = pageSize
@@ -133,10 +143,10 @@
                 initialization()
                 data.pagination.pageSize = data.tableConfig.requestData.params.pageSize
                 setPageSize(data.pagination.pageSize)
-                requestTableData(data.tableConfig.requestData)
+                // requestTableData(data.tableConfig.requestData)
             })
             return {
-                data, handleSizeChange, handleCurrentChange, tableHandleSelectionChange,refreshTable
+                data, handleSizeChange, handleCurrentChange, tableHandleSelectionChange,refreshTable,refreshTableData
             }
         }
     }

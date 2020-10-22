@@ -15,8 +15,13 @@ export function GetSms (data) {
 /**
  * 获取用户角色
  */
-
-
+export function GetuserRole (data={}) {
+    return request({
+        method: 'post',
+        url: '/userRole/',
+        data,//data:data可以写成data,es6的语法
+    })
+}
 
 
 /**

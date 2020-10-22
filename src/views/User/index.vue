@@ -14,12 +14,12 @@
                                 </el-select>
                             </el-col>
                             <el-col :span="4">
-                                <el-input placeholder="请输入搜索关键字">
+                                <el-input v-model="data.keyWord" placeholder="请输入搜索关键字">
 
                                 </el-input>
                             </el-col>
                             <el-col :span="16">
-                                <el-button type="danger">
+                                <el-button type="danger" @click="search">
                                     搜索
                                 </el-button>
                             </el-col>
@@ -63,7 +63,7 @@
     import {reactive, ref} from '@vue/composition-api'
     import TableCommon from "@/components/TableCommon";
     import userAdd from './dialog/add'
-    import {deleteUser,activesUser} from '@/api/user'
+    import {deleteUser, activesUser} from '@/api/user'
     import {global} from '@/utils/globla.js'
 
     export default {
@@ -80,6 +80,7 @@
             const data = reactive({
                 selectValue: 'name',
                 dialogShow: false,
+                keyWord: '',
                 tableDelte: {},
                 option: [
                     {
@@ -141,10 +142,19 @@
                     paginationShow: true,
                     paginationPageSizes: [5, 10, 20]
                 },
-                tableRow:{}
+                tableRow: {}
             })
             const userAdds = () => {
                 data.dialogShow = true
+                data.tableRow = Object.assign({
+                    username: '',
+                    password: '',
+                    truename: '',
+                    phone: '',
+                    region: '',
+                    status: '1',
+                    role: []
+                })
             }
             //刷新表格数据
             const refreshTable = () => {
@@ -199,20 +209,20 @@
             }
             //编辑
             const editTable = val => {
-                // console.log(val)
-                userAdds()
-                data.tableRow=val
+                console.log(val)
+                data.dialogShow = true
+                data.tableRow = Object.assign({}, val)
             }
             //用户禁启用
-            const switchChange = val=>{
+            const switchChange = val => {
                 console.log(val)
-                if(switchStatus.value) return false
-                switchStatus.value=true
-                let params={
-                    id:val.id,
-                    status:val.status
+                if (switchStatus.value) return false
+                switchStatus.value = true
+                let params = {
+                    id: val.id,
+                    status: val.status
                 }
-                activesUser(params).then(res=>{
+                activesUser(params).then(res => {
                     if (res.data.resCode === 0) {
                         root.$message({
                             message: res.data.message,
@@ -220,11 +230,19 @@
                         })
                         //刷新表格中的数据
                         refreshTable()
-                        switchStatus.value=false
+                        switchStatus.value = false
                     }
-                }).catch(err=>{
+                }).catch(err => {
                     console.log(err)
                 })
+            }
+            //搜索
+            const search = () => {
+                let params = {
+                    [data.selectValue]: data.keyWord
+                }
+                tableComs.value.refreshTableData(params)
+                console.log(params)
             }
             return {
                 data,
@@ -234,7 +252,8 @@
                 tableComs,
                 refreshTable,
                 editTable,
-                switchChange
+                switchChange,
+                search
             }
         }
     }

@@ -2,8 +2,7 @@ import Vue from 'vue'
 import VueRouter from 'vue-router'
 import Layout from '@/views/Layout'
 Vue.use(VueRouter)
-
-const routes = [
+export const defaultRouterMap=[
   {
     path: '/',
     redirect: 'login',
@@ -31,8 +30,8 @@ const routes = [
     // redirect: 'index',
     component: Layout,
     meta:{
-     name:'控制台',
-     icon:'home'
+      name:'控制台',
+      icon:'home'
     },
     children: [
       {
@@ -45,14 +44,17 @@ const routes = [
       }
     ]
   },
+]
+export const asyncRouterMap=[
   //信息管理
   {
     path: '/Infor',
     name: 'Infor',
     component: Layout,
     meta:{
-     name:'信息管理',
-     icon:'infor'
+      name:'信息管理',
+      system:'信息功能',
+      icon:'infor'
     },
     children: [
       {
@@ -89,8 +91,9 @@ const routes = [
     name: 'User',
     component: Layout,
     meta:{
-     name:'用户管理',
-     icon:'user'
+      name:'用户管理',
+      system:'用户功能',
+      icon:'user'
     },
     children: [
       {
@@ -104,6 +107,8 @@ const routes = [
     ]
   }
 ]
+console.log(asyncRouterMap)
+const routes = defaultRouterMap
 
 const router = new VueRouter({
   routes

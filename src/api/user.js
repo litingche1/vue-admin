@@ -10,6 +10,16 @@ export function getRole(data={}) {
     })
 }
 /**
+ * 获取系统
+ */
+export function getSystem(data={}) {
+    return request({
+        method: 'post',
+        url: "/system/",
+        data,
+    })
+}
+/**
  * 获取用户列表
  */
 export function addUser(data) {
@@ -36,6 +46,16 @@ export function activesUser(data) {
     return request({
         method: 'post',
         url: "/user/actives/",
+        data,
+    })
+}
+/**
+ * 用户编辑
+ */
+export function editUser(data) {
+    return request({
+        method: 'post',
+        url: "/user/edit/",
         data,
     })
 }

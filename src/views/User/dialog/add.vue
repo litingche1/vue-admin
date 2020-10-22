@@ -52,7 +52,7 @@
     } from '@/utils/validate'
     import {ref, reactive, watchEffect, onBeforeMount} from '@vue/composition-api'
     import CityPickers from '@c/CityPicker/index'
-    import {getRole, addUser} from '@/api/user'
+    import {getSystem, addUser, editUser} from '@/api/user'
     import sha1 from 'js-sha1' //sha1加密
     export default {
         name: 'dialogs',
@@ -68,7 +68,8 @@
             },
             editData: {
                 type: Object,
-                default: () => {}
+                default: () => {
+                }
             }
         },
         components: {
@@ -87,15 +88,30 @@
             }
             //验证密码
             let validatePass = (rule, value, callback) => {
-                data.form.password = stripscript(value)
-                value = data.form.password
-                if (value === '') {
-                    callback(new Error('请输入密码'))
-                } else if (validatePassword(value)) {
-                    callback(new Error('密码为6至20位数字+字母'))
-                } else {
+                /**
+                 * 业务逻辑
+                 * 1、编辑状态：
+                 *    需要检验：data.form.id存在并且，密码不为空时
+                 *    不需要检验：data.form.id存在并且，密码为空时
+                 *
+                 * 2、添加状态
+                 *    需要检验：data.form.id不存在
+                 */
+                if (data.form.id && !value) {
                     callback()
                 }
+                if ((data.form.id && value) || !data.form.id) {
+                    data.form.password = stripscript(value)
+                    value = data.form.password
+                    if (value === '') {
+                        callback(new Error('请输入密码'))
+                    } else if (validatePassword(value)) {
+                        callback(new Error('密码为6至20位数字+字母'))
+                    } else {
+                        callback()
+                    }
+                }
+
             }
             //表单校验规则
             const rules = reactive({
@@ -120,23 +136,35 @@
             })
             //弹出框打开的时候执行该函数
             const opentck = () => {
-                getRole().then(res => {
+                getSystem().then(res => {
                     data.checkData = res.data.data
                 })
-                let fromData = Object.assign({}, props.editData)
-                if(fromData.id){
+                let fromData = props.editData
+                //编辑状态
+                if (fromData.id) {
                     fromData.role = fromData.role.split(',')
-                }else{
+                    for (let key in fromData) {
+                        data.form[key] = fromData[key]
+                    }
+                    console.log(data.form)
+                } else {//新增状态
+                    console.log(9999)
                     data.form.id && delete data.form.id
+                    for (let key in fromData) {
+                        if (key === 'role') {
+                            data.form.role = []
+                        } else if (key === 'status') {
+                            data.form.status = '1'
+                        } else {
+                            data.form[key] = fromData[key]
+                        }
+
+                    }
                 }
-                for(let key in fromData){
-                    data.form[key]=fromData[key]
-                }
-console.log(data.form)
-                // data.form = fromData
+
             }
             onBeforeMount(() => {
-                // getRole().then(res=>{
+                // getSystem().then(res=>{
                 //     console.log(res.data.data)
                 // })
             })
@@ -149,31 +177,59 @@ console.log(data.form)
             })
             const closedshow = () => {
                 showdialog.value = false
+                resetFields()
                 emit('update:showlog', false)
+
             }
             //重置表单
             const resetFields = () => {
                 data.confingCityData = {}
                 refs.ruleForm.resetFields()
             }
+            //编辑用户信息
+            const editUserData = params => {
+                editUser(params).then(res => {
+                    if (res.data.resCode === 0) {
+                        root.$message({
+                            message: res.data.message,
+                            type: 'success'
+                        })
+                        emit('refresh')
+                    }
+                })
+            }
+            //添加用户
+            const addUserData = params => {
+                addUser(params).then(res => {
+                    if (res.data.resCode === 0) {
+                        root.$message({
+                            message: res.data.message,
+                            type: 'success'
+                        })
+                        emit('refresh')
+                    }
+                }).catch(err => {
+                    console.log(err)
+                })
+            }
+            //提交
             const submit = () => {
                 refs.ruleForm.validate(valid => {
                     if (valid) {
                         let resData = JSON.parse(JSON.stringify(data.form))
                         resData.role = resData.role.join()
                         resData.region = JSON.stringify(data.confingCityData)
-                        resData.password = sha1(resData.password)
-                        addUser(resData).then(res => {
-                            if (res.data.resCode === 0) {
-                                root.$message({
-                                    message: res.data.message,
-                                    type: 'success'
-                                })
-                                emit('refresh')
+                        if (resData.id) {
+                            if (resData.password) {
+                                resData.password = sha1(resData.password)
+                            } else {
+                                delete resData.password
                             }
-                        }).catch(err => {
-                            console.log(err)
-                        })
+                            editUserData(resData)
+                        } else {
+                            resData.password = sha1(resData.password)
+                            addUserData(resData)
+                        }
                         // button_status.value = true
                         resetFields()
                         closedshow()
