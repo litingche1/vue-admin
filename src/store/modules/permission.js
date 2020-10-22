@@ -2,14 +2,10 @@ import {GetuserRole} from '@/api/login'
 import {asyncRouterMap, defaultRouterMap} from '@/router/index'
 
 const state = {
-    role: [],
     allRouter: defaultRouterMap,
     addRouter: []
 }
 const mutations = {
-    SET_ROLE(state, value) {
-        state.role = value
-    },
     SET_Router(state, value) {
         state.addRouter = value
         state.allRouter = defaultRouterMap.concat(value)
@@ -17,7 +13,6 @@ const mutations = {
     }
 }
 const getters = {
-    role: state => state.role,
     allRouter: state => state.allRouter,
     addRouter: state => state.addRouter,
 }
@@ -28,9 +23,9 @@ const actions = {
     * */
     getRole({commit}, data) {
         return new Promise((resolve) => {
-            console.log(data)
+            console.log(data,commit)
             GetuserRole().then(res => {
-                commit('SET_ROLE', res.data.data.role)
+                // commit('SET_ROLE', res.data.data.role)
                 // console.log(res.data.data.role)
                 resolve(res.data.data.role)
                 // console.log(resolve,reject)

@@ -3,7 +3,8 @@ import { setToken, setUsername, getUsername,removeToken,removeUsername } from '@
 const state = {
   isCollapae: JSON.parse(sessionStorage.getItem('isCollapae')) || false,
   toKen: '',
-  userName: getUsername() || ''
+  userName: getUsername() || '',
+  role: [],
 }
 const mutations = {
   SET_COLLAPSE(state) {
@@ -18,10 +19,14 @@ const mutations = {
   },
   SET_USERNAME(state, value) {
     state.userName = value
-  }
+  },
+  SET_ROLE(state, value) {
+    state.role = value
+  },
 }
 const getters = {
-  username: state => state.userName
+  username: state => state.userName,
+  role: state => state.role,
 }
 const actions = {
   login({ commit }, data) {
@@ -44,6 +49,7 @@ const actions = {
     return new Promise(resolve => {
       commit('SET_TOKEN', '')
       commit('SET_USERNAME', '')
+      commit('SET_ROLE','')
       removeToken()
       removeUsername()
       resolve()

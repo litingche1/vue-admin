@@ -21,8 +21,9 @@ router.beforeEach((to, from, next) => {
              * 2、以什么条件处理
              * roles[]
              */
-            if (store.getters['permission/role'].length === 0) {
+            if (store.getters['login/role'].length === 0) {
                 store.dispatch('permission/getRole').then(res => {
+                    store.commit('login/SET_ROLE',res)
                     store.dispatch('permission/GreatRouter', res).then(res => {
                         let addRouter = store.getters['permission/addRouter']
                         let allRouter = store.getters['permission/allRouter']
