@@ -52,7 +52,7 @@
     } from '@/utils/validate'
     import {ref, reactive, watchEffect, onBeforeMount} from '@vue/composition-api'
     import CityPickers from '@c/CityPicker/index'
-    import {getSystem, addUser, editUser} from '@/api/user'
+    import {getRole, addUser, editUser} from '@/api/user'
     import sha1 from 'js-sha1' //sha1加密
     export default {
         name: 'dialogs',
@@ -136,7 +136,7 @@
             })
             //弹出框打开的时候执行该函数
             const opentck = () => {
-                getSystem().then(res => {
+                getRole().then(res => {
                     data.checkData = res.data.data
                 })
                 let editData = props.editData
@@ -165,7 +165,7 @@
 
             }
             onBeforeMount(() => {
-                // getSystem().then(res=>{
+                // getRole().then(res=>{
                 //     console.log(res.data.data)
                 // })
             })

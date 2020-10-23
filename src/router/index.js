@@ -45,6 +45,9 @@ export const defaultRouterMap=[
     ]
   },
 ]
+//0: {name: "业务员", role: "sale"}
+// 1: {name: "技术员", role: "technician"}
+// 2: {name: "部门经理", role: "manager"}
 export const asyncRouterMap=[
   //信息管理
   {
@@ -54,6 +57,7 @@ export const asyncRouterMap=[
     meta:{
       name:'信息管理',
       system:'信息功能',
+      role:['技术员'],
       icon:'infor'
     },
     children: [
@@ -62,7 +66,8 @@ export const asyncRouterMap=[
         name: 'inforCategory',
         component: () => import('../views/Infor/inforCategory.vue'),
         meta:{
-          name:'信息分类'
+          name:'信息分类',
+          role:['技术员'],
         }
       },
       {
