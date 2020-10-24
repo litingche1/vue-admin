@@ -81,7 +81,7 @@ export const asyncRouterMap=[
         component: () => import('../views/Infor/inforCategory.vue'),
         meta:{
           name:'信息分类',
-          // role:['技术员'],
+          role:['技术员'],
         }
       },
       {

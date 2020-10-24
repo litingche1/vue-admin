@@ -91,14 +91,14 @@
             <el-table-column prop="user" label="管理员" width="115"></el-table-column>
             <el-table-column label="操作" width="237">
                 <template slot-scope="scope">
-                    <el-button size="mini" type="danger" @click="deleteItem(scope.row.id)"
+                    <el-button v-if="btnperm('info.delete')" size="mini" type="danger" @click="deleteItem(scope.row.id)"
                     >删除
                     </el-button
                     >
-                    <el-button size="mini" type="success" @click="editItem(scope.row)"
+                    <el-button v-if="btnperm('info.edit')" size="mini" type="success" @click="editItem(scope.row)"
                     >编辑
                     </el-button>
-                    <el-button size="mini" type="success" @click="editItemDetails(scope.row)"
+                    <el-button v-if="btnperm('qqq')" size="mini" type="success" @click="editItemDetails(scope.row)"
                     >编辑详情
                     </el-button>
                 </template>

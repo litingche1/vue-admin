@@ -5,6 +5,7 @@ const state = {
   toKen: '',
   userName: getUsername() || '',
   role: [],
+  buttonPermission:[],
 }
 const mutations = {
   SET_COLLAPSE(state) {
@@ -23,10 +24,15 @@ const mutations = {
   SET_ROLE(state, value) {
     state.role = value
   },
+  SET_BUTTON(state, value) {
+    state.buttonPermission=value
+    console.log(state.buttonPermission)
+  }
 }
 const getters = {
   username: state => state.userName,
   role: state => state.role,
+  buttonPermission: state => state.buttonPermission,
 }
 const actions = {
   login({ commit }, data) {
@@ -50,6 +56,7 @@ const actions = {
       commit('SET_TOKEN', '')
       commit('SET_USERNAME', '')
       commit('SET_ROLE','')
+      commit('SET_BUTTON','')
       removeToken()
       removeUsername()
       resolve()

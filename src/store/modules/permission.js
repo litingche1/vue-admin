@@ -30,7 +30,7 @@ const actions = {
         return new Promise((resolve) => {
             console.log(data, commit)
             GetuserRole().then(res => {
-                resolve(res.data.data.role)
+                resolve(res.data.data)
             }).catch(err => {
                 console.log(err)
             })
