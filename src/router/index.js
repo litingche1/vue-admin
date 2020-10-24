@@ -2,6 +2,19 @@ import Vue from 'vue'
 import VueRouter from 'vue-router'
 import Layout from '@/views/Layout'
 Vue.use(VueRouter)
+/**
+ * 1、系统分配
+ * 2、角色分配
+ * 3、按钮级别分配
+ *
+ * 工作：路由是前台配，还是后台配的问题？
+ *
+ * 个人建议，前端配置，这样才能达到前后端分离的工作；
+ *
+ * 1、后台配置路由，前端人不在的情况；没办法页面跳转；
+ * 2、新的需求，前端把路由配好了，后台的人不在，没办法找到路由；
+ *
+ */
 export const defaultRouterMap=[
   {
     path: '/',
@@ -45,6 +58,7 @@ export const defaultRouterMap=[
     ]
   },
 ]
+//按照系统来分配权限添加system，按照角色分配权限，添加role:['技术员'],
 //0: {name: "业务员", role: "sale"}
 // 1: {name: "技术员", role: "technician"}
 // 2: {name: "部门经理", role: "manager"}
@@ -67,7 +81,7 @@ export const asyncRouterMap=[
         component: () => import('../views/Infor/inforCategory.vue'),
         meta:{
           name:'信息分类',
-          role:['技术员'],
+          // role:['技术员'],
         }
       },
       {
@@ -75,7 +89,8 @@ export const asyncRouterMap=[
         name: 'inforList',
         component: () => import('../views/Infor/inforList.vue'),
         meta:{
-          name:'信息列表'
+          name:'信息列表',
+          role:['技术员'],
         }
       },
       {
@@ -98,6 +113,7 @@ export const asyncRouterMap=[
     meta:{
       name:'用户管理',
       system:'用户功能',
+      role:['技术员'],
       icon:'user'
     },
     children: [
@@ -106,7 +122,8 @@ export const asyncRouterMap=[
         name: 'UserList',
         component: () => import('../views/User/index.vue'),
         meta:{
-          name:'用户列表'
+          name:'用户列表',
+          role:['技术员'],
         }
       },
     ]
