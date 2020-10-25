@@ -7,6 +7,7 @@ import 'element-ui/lib/theme-chalk/index.css';
 import './router/authority'//路由守卫
 import VueCompositionApi from '@vue/composition-api';
 import {buttonPermission} from '@/utils/buttonPermission'
+import './utils/buttonper'
 Vue.prototype.btnperm=buttonPermission
 import './icon'
 Vue.use(VueCompositionApi);

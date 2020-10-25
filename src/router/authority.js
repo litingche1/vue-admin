@@ -24,7 +24,8 @@ router.beforeEach((to, from, next) => {
             if (store.getters['login/role'].length === 0) {
                 store.dispatch('permission/getRole').then(res => {
                     store.commit('login/SET_ROLE',res.role)
-                    store.commit('login/SET_BUTTON',res.button)
+                    // store.commit('login/SET_BUTTON',res.button)//v-if实现的
+                    store.commit('login/SET_BUTTON',res.btnPerm)
                     store.dispatch('permission/GreatRouter', res.role).then(res => {
                         let addRouter = store.getters['permission/addRouter']
                         let allRouter = store.getters['permission/allRouter']

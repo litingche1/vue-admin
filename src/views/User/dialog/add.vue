@@ -33,6 +33,21 @@
                     </el-checkbox>
                 </el-checkbox-group>
             </el-form-item>
+            <el-form-item label="按钮:" :label-width="formLabelWidth">
+                <template v-if="data.buttonList.length>0">
+                    <div v-for="items in data.buttonList" :key="items.id">
+                        <h4>{{items.name}}</h4>
+                        <el-checkbox-group v-if="items.perm.length>0" v-model="data.form.btnPerm" prop="checkList">
+                            <el-checkbox v-for="child in items.perm" :label="child.name" :key="child.value">
+                                {{child.name}}
+                            </el-checkbox>
+                        </el-checkbox-group>
+                    </div>
+
+
+                </template>
+
+            </el-form-item>
         </el-form>
         <div slot="footer" class="dialog-footer">
             <el-button @click="closedshow">取消</el-button>
@@ -52,7 +67,7 @@
     } from '@/utils/validate'
     import {ref, reactive, watchEffect, onBeforeMount} from '@vue/composition-api'
     import CityPickers from '@c/CityPicker/index'
-    import {getRole, addUser, editUser} from '@/api/user'
+    import {getRole, addUser, editUser,permButton} from '@/api/user'
     import sha1 from 'js-sha1' //sha1加密
     export default {
         name: 'dialogs',
@@ -123,6 +138,7 @@
             })
             const data = reactive({
                 checkData: [],
+                buttonList:[],
                 confingCityData: {},
                 form: {
                     username: '',
@@ -131,7 +147,8 @@
                     phone: '',
                     region: '',
                     status: '1',
-                    role: []
+                    role: [],
+                    btnPerm:[],
                 }
             })
             //弹出框打开的时候执行该函数
@@ -139,10 +156,14 @@
                 getRole().then(res => {
                     data.checkData = res.data.data
                 })
+                permButton().then(res=>{
+                    data.buttonList=res.data.data
+                })
                 let editData = props.editData
                 //编辑状态
                 if (editData.id) {
-                    editData.role = editData.role.split(',')
+                    editData.role =editData.role? editData.role.split(',') : []
+                    editData.btnPerm = editData.btnPerm? editData.btnPerm.split(',') :[]
                     for (let key in editData) {
                         data.form[key] = editData[key]
                     }
@@ -219,6 +240,7 @@
                     if (valid) {
                         let resData = JSON.parse(JSON.stringify(data.form))
                         resData.role = resData.role.join()
+                        resData.btnPerm = resData.btnPerm.join()
                         resData.region = JSON.stringify(data.confingCityData)
                         if (resData.id) {
                             if (resData.password) {

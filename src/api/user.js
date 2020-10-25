@@ -20,6 +20,16 @@ export function getSystem(data={}) {
     })
 }
 /**
+ * 获取按钮权限
+ */
+export function permButton(data={}) {
+    return request({
+        method: 'post',
+        url: "/permButton/",
+        data,
+    })
+}
+/**
  * 获取用户列表
  */
 export function addUser(data) {
