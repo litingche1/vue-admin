@@ -1,4 +1,4 @@
-import { Login } from '@/api/login'
+import { Login,Logout } from '@/api/login'
 import { setToken, setUsername, getUsername,removeToken,removeUsername } from '@/utils/user'
 const state = {
   isCollapae: JSON.parse(sessionStorage.getItem('isCollapae')) || false,
@@ -53,13 +53,16 @@ const actions = {
   },
   loginout({ commit }) {
     return new Promise(resolve => {
-      commit('SET_TOKEN', '')
-      commit('SET_USERNAME', '')
-      commit('SET_ROLE','')
-      commit('SET_BUTTON','')
-      removeToken()
-      removeUsername()
-      resolve()
+      Logout().then(res=>{
+        commit('SET_TOKEN', '')
+        commit('SET_USERNAME', '')
+        commit('SET_ROLE','')
+        commit('SET_BUTTON','')
+        removeToken()
+        removeUsername()
+        resolve(res.data)
+      })
+
     })
   }
 }

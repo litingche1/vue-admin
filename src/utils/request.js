@@ -1,7 +1,7 @@
 import axios from 'axios'
 import { Message } from 'element-ui'
 import { getToken, getUsername } from '@/utils/user.js'
-const BASEURL = process.env.NODE_ENV === 'production' ? '' : '/api'
+const BASEURL = process.env.NODE_ENV === 'production' ? process.env.VUE_APP_API : process.env.VUE_APP_API
 //创建axios实例并且赋值给service
 const service = axios.create({
   baseURL: BASEURL

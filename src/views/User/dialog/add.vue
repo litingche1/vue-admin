@@ -16,12 +16,12 @@
             <el-form-item label="密码:" :label-width="formLabelWidth" prop="password">
                 <el-input type="password" v-model="data.form.password" placeholder="请输入6至20位数字+字母的密码"></el-input>
             </el-form-item>
-            <el-form-item label="手机号:" :label-width="formLabelWidth" prop="phone">
-                <el-input v-model="data.form.phone" placeholder="请输入手机号"></el-input>
-            </el-form-item>
             <el-form-item label="地区:" :label-width="formLabelWidth" prop="region">
                 <CityPickers :configCityData.sync="data.confingCityData"/>
-                <!--            <CityPickers :cityConfig="['province','city','area']" :configCityData.sync="confingCityData"/>-->
+            </el-form-item>
+            <!--            <CityPickers :cityConfig="['province','city','area']" :configCityData.sync="confingCityData"/>-->
+            <el-form-item label="手机号:" :label-width="formLabelWidth" prop="phone">
+                <el-input v-model="data.form.phone" placeholder="请输入手机号"></el-input>
             </el-form-item>
             <el-form-item label="是否启用:" :label-width="formLabelWidth" prop="status">
                 <el-radio v-model="data.form.status" label="1">启用</el-radio>
@@ -67,7 +67,7 @@
     } from '@/utils/validate'
     import {ref, reactive, watchEffect, onBeforeMount} from '@vue/composition-api'
     import CityPickers from '@c/CityPicker/index'
-    import {getRole, addUser, editUser,permButton} from '@/api/user'
+    import {getRole, addUser, editUser, permButton} from '@/api/user'
     import sha1 from 'js-sha1' //sha1加密
     export default {
         name: 'dialogs',
@@ -138,7 +138,7 @@
             })
             const data = reactive({
                 checkData: [],
-                buttonList:[],
+                buttonList: [],
                 confingCityData: {},
                 form: {
                     username: '',
@@ -148,22 +148,26 @@
                     region: '',
                     status: '1',
                     role: [],
-                    btnPerm:[],
+                    btnPerm: [],
                 }
             })
             //弹出框打开的时候执行该函数
             const opentck = () => {
-                getRole().then(res => {
-                    data.checkData = res.data.data
-                })
-                permButton().then(res=>{
-                    data.buttonList=res.data.data
-                })
+                if (data.checkData.length === 0) {
+                    getRole().then(res => {
+                        data.checkData = res.data.data
+                    })
+                }
+                if (data.buttonList === 0) {
+                    permButton().then(res => {
+                        data.buttonList = res.data.data
+                    })
+                }
                 let editData = props.editData
                 //编辑状态
                 if (editData.id) {
-                    editData.role =editData.role? editData.role.split(',') : []
-                    editData.btnPerm = editData.btnPerm? editData.btnPerm.split(',') :[]
+                    editData.role = editData.role ? editData.role.split(',') : []
+                    editData.btnPerm = editData.btnPerm ? editData.btnPerm.split(',') : []
                     for (let key in editData) {
                         data.form[key] = editData[key]
                     }

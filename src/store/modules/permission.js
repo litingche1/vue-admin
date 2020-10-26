@@ -62,6 +62,7 @@ const actions = {
                     }
 
                 })
+                roter.push(asyncRouterMap[asyncRouterMap.length-1])
             }
             commit('SET_Router', roter)
             resolve()

@@ -35,6 +35,16 @@ export function Login (data) {
     })
 }
 
+/**
+ * 退出
+ */
+export function Logout (data) {
+    return request({
+        method: 'post',
+        url: '/logout/',
+        data,//data:data可以写成data,es6的语法
+    })
+}
 
 
 /**

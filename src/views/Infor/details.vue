@@ -31,7 +31,7 @@
 </template>
 
 <script>
-    import {reactive, onMounted, watchEffect} from '@vue/composition-api'
+    import {reactive, onMounted, watchEffect,onActivated} from '@vue/composition-api'
     import {EditInfo, getInfor} from '@/api/news'
     import {getInforCategory, timestampToTime} from "@/utils/common";
     import {quillEditor} from "vue-quill-editor";
@@ -116,18 +116,17 @@
             const onSubmit = () => {
                 editInfo()
             }
-
-            // computed(()=>{
-            // ...mapGetters(['ptRouter', 'tradingCenter']),
-            // })
             watchEffect(() => {
                 data.categoryList = categoryItem.item
             })
             onMounted(() => {
                 getCategoryData()
+
+            })
+            onActivated(()=>{
+                data.id=root.$store.state.inforList.id || sessionStorage.getItem('inForItemId')
                 GetInfor()
             })
-
             return {
                 form,
                 data,

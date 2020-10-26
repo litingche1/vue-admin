@@ -78,13 +78,13 @@
             const tableComs = ref(null)
             const switchStatus = ref(false)
             const data = reactive({
-                selectValue: 'name',
+                selectValue: 'truename',
                 dialogShow: false,
                 keyWord: '',
                 tableDelte: {},
                 option: [
                     {
-                        value: 'name', lable: '姓名'
+                        value: 'truename', lable: '姓名'
                     },
                     {
                         value: 'phone', lable: '手机号'

@@ -69,16 +69,27 @@ module.exports = {
     hot: true, // 开启热加载
     hotOnly: false,
     proxy: {
-      '/api': {
+      [process.env.VUE_APP_API]: {
         /* 目标代理服务器地址 */
-        target: `http://www.web-jshtml.cn/vue_admin_api/token`,
+        target: `http://www.web-jshtml.cn/productapi/token`,
         /* 允许跨域 */
         changeOrigin: true,
         pathRewrite: {
-          '^/api': '',
+          [`^${process.env.VUE_APP_API}`]: '',
         },
       },
     }, // 设置代理
+    // proxy: {
+    //   '/api': {
+    //     /* 目标代理服务器地址 */
+    //     target: `http://www.web-jshtml.cn/productapi/token`,
+    //     /* 允许跨域 */
+    //     changeOrigin: true,
+    //     pathRewrite: {
+    //       '^/api': '',
+    //     },
+    //   },
+    // }, // 设置代理
     overlay: { // 全屏模式下是否显示脚本错误
       warnings: true,
       errors: true

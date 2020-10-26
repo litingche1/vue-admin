@@ -317,8 +317,9 @@
                 return timestampToTime(row.createDate)
             }
             const categoryConversion = row => {
-                let data = options.item.filter(item => item.id === row.categoryId)
-                return data[0].category_name
+                let data = options.item.filter(item => item.id === row.categoryId)[0]
+                if(!data){return false}
+                return data.category_name
                 // console.log(row,data)
             }
             //修改表格数据会刷新数据

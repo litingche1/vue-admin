@@ -2,7 +2,11 @@
   <div id="main-warp">
     <div class="main-content">
       <div class="content">
-        <router-view />
+        <keep-alive include="inforList">
+          <router-view v-if="$route.meta.keepAlive" />
+        </keep-alive>
+<!--        <router-view></router-view>-->
+        <router-view v-if="!$route.meta.keepAlive"/>
       </div>
     </div>
   </div>

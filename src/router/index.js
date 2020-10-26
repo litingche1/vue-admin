@@ -57,6 +57,27 @@ export const defaultRouterMap=[
       }
     ]
   },
+    //404
+  {
+    path: '/404page',
+    name: '404page',
+    // redirect: 'index',
+    component: Layout,
+    hidden:true,
+    meta:{
+      name:'404',
+      icon:'404'
+    },
+    children: [
+      {
+        path: '/404',
+        component: () => import('../views/404/404.vue'),
+        meta:{
+          name:'404'
+        }
+      }
+    ]
+  },
 ]
 //按照系统来分配权限添加system，按照角色分配权限，添加role:['技术员'],
 //0: {name: "业务员", role: "sale"}
@@ -81,6 +102,7 @@ export const asyncRouterMap=[
         component: () => import('../views/Infor/inforCategory.vue'),
         meta:{
           name:'信息分类',
+          keepAlive:true,
           role:['技术员'],
         }
       },
@@ -90,6 +112,7 @@ export const asyncRouterMap=[
         component: () => import('../views/Infor/inforList.vue'),
         meta:{
           name:'信息列表',
+          keepAlive:true,
           role:['技术员'],
         }
       },
@@ -100,7 +123,8 @@ export const asyncRouterMap=[
         component: () => import('../views/Infor/details.vue'),
         meta:{
           name:'信息列表详情',
-
+          keepAlive:true,
+          role:['技术员'],
         }
       },
     ]
@@ -127,7 +151,8 @@ export const asyncRouterMap=[
         }
       },
     ]
-  }
+  },
+  {path:"*",redirect: '/404',hidden:true}
 ]
 console.log(asyncRouterMap)
 const routes = defaultRouterMap
